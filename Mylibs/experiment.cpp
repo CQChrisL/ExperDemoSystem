@@ -93,15 +93,15 @@ void UDPSender::stop() {
 
 void UDPSender::changeMessage(char newChannel, char newDir, char newMessage, char newWave) {
 	if (run_square_wave) {
-		stopSquareWave();  // Èç¹ûÕıÔÚÔËĞĞ£¬ÏÈÍ£Ö¹ÏÖÓĞµÄ·½²¨
+		stopSquareWave();  // å¦‚æœæ­£åœ¨è¿è¡Œï¼Œå…ˆåœæ­¢ç°æœ‰çš„æ–¹æ³¢
 	}
 
 	message = newMessage;
 	volChannel = newChannel;
 	volDir = newDir;
 	volWave = newWave;
-	//if(newMessage == '1')	//Ô­µç³¡´Ì¼¤Ä£Ê½²ÉÓÃÖ¸ÕëĞÎÊ½£¬Ö¸ÕëÎª1Ê±¶ÔÓ¦µçÑ¹Îª0£»Ö¸ÕëÎªÆäËûÖµÊ±¶ÔÓ¦ÆäÓàµçÑ¹¡£
-	if (newMessage == '0')	//0ÎªÄ¬ÈÏÁãÊäÈë
+	//if(newMessage == '1')	//åŸç”µåœºåˆºæ¿€æ¨¡å¼é‡‡ç”¨æŒ‡é’ˆå½¢å¼ï¼ŒæŒ‡é’ˆä¸º1æ—¶å¯¹åº”ç”µå‹ä¸º0ï¼›æŒ‡é’ˆä¸ºå…¶ä»–å€¼æ—¶å¯¹åº”å…¶ä½™ç”µå‹ã€‚
+	if (newMessage == '0')	//0ä¸ºé»˜è®¤é›¶è¾“å…¥
 		curType = WaveType::None;
 	else
 		curType = WaveType::DC;
@@ -109,37 +109,37 @@ void UDPSender::changeMessage(char newChannel, char newDir, char newMessage, cha
 
 void UDPSender::SquareWave(char Amplitude, int Frequency, int DutyCycle) {
 	if (run_square_wave) {
-		run_square_wave = false;  // Í£Ö¹·½²¨
+		run_square_wave = false;  // åœæ­¢æ–¹æ³¢
 		if (square_wave_thread.joinable()) {
-			square_wave_thread.join();  // µÈ´ıÏß³ÌÍê³É
+			square_wave_thread.join();  // ç­‰å¾…çº¿ç¨‹å®Œæˆ
 		}
 	}
 
-	run_square_wave = true;  // ±ê¼Ç·½²¨ÎªÔËĞĞ×´Ì¬
+	run_square_wave = true;  // æ ‡è®°æ–¹æ³¢ä¸ºè¿è¡ŒçŠ¶æ€
 	curType = WaveType::Square;
 
 	square_wave_thread = std::thread([this, Amplitude, Frequency, DutyCycle]() {
-		int period = 1000 / Frequency;//Ò»¸öÖÜÆÚ×ÜÊ±¼ä
-		int highTime = period * DutyCycle / 100;//¸ßµçÆ½Î¬³ÖÊ±¼ä
+		int period = 1000 / Frequency;//ä¸€ä¸ªå‘¨æœŸæ€»æ—¶é—´
+		int highTime = period * DutyCycle / 100;//é«˜ç”µå¹³ç»´æŒæ—¶é—´
 
 		while (run_square_wave) {
 			this->message = Amplitude;
 			std::this_thread::sleep_for(std::chrono::milliseconds(highTime));
-			this->message = '0';//Ö¸Õë0¶ÔÓ¦¸ºµçÑ¹-4V
+			this->message = '0';//æŒ‡é’ˆ0å¯¹åº”è´Ÿç”µå‹-4V
 			std::this_thread::sleep_for(std::chrono::milliseconds(period - highTime));
 		}
 		});
-	square_wave_thread.detach();  // ÈÃÏß³ÌÔÚºóÌ¨ÔËĞĞ
+	square_wave_thread.detach();  // è®©çº¿ç¨‹åœ¨åå°è¿è¡Œ
 }
 
 void UDPSender::stopSquareWave() {
 	if (run_square_wave) {
-		run_square_wave = false;  // Í£Ö¹·½²¨
+		run_square_wave = false;  // åœæ­¢æ–¹æ³¢
 		if (square_wave_thread.joinable()) {
-			square_wave_thread.join();  // µÈ´ıÏß³ÌÍê³É
+			square_wave_thread.join();  // ç­‰å¾…çº¿ç¨‹å®Œæˆ
 		}
 	}
-	//message = '1';  // ÉèÖÃµçÑ¹Îª0
+	//message = '1';  // è®¾ç½®ç”µå‹ä¸º0
 	message = '0';
 	curType = WaveType::None;
 }
@@ -269,9 +269,9 @@ void InitializeExperiment(Experiment* exp) {
 	Neuron->Tail = (CvPoint*)malloc(sizeof(CvPoint));
 	Neuron->prevHead = (CvPoint*)malloc(sizeof(CvPoint));
 	Neuron->prevTail = (CvPoint*)malloc(sizeof(CvPoint));
-	Neuron->Centerline = cvCreateSeq(CV_SEQ_ELTYPE_POINT, sizeof(CvSeq), sizeof(CvPoint), Neuron->MemCenterLine); //×îºóÒ»¸ö²ÎÊı²»ÖªÊÇ·ñÕıÈ·
+	Neuron->Centerline = cvCreateSeq(CV_SEQ_ELTYPE_POINT, sizeof(CvSeq), sizeof(CvPoint), Neuron->MemCenterLine); //æœ€åä¸€ä¸ªå‚æ•°ä¸çŸ¥æ˜¯å¦æ­£ç¡®
 
-	//½«Î¬»¤µÄÏß³æ¶ÓÁĞ³õÊ¼»¯
+	//å°†ç»´æŠ¤çš„çº¿è™«é˜Ÿåˆ—åˆå§‹åŒ–
 	exp->NemDisp = new std::queue<double>();
 
 	exp->Neuron = Neuron;
@@ -304,21 +304,21 @@ void RollCameraInput(Experiment* exp) {
 	/** Turn on Camera **/
 	T2Cam_ShowPvcamInfo(exp->argc, exp->argv);
 	
-	//¸øexpÀïµÄMyCamera·ÖÅäÄÚ´æ
+	//ç»™expé‡Œçš„MyCameraåˆ†é…å†…å­˜
 	if (!T2Cam_AllocateCamDataStructMemory(&(exp->MyCamera)))
 	{  
 		exp->e = EXP_ERROR;
 		return;
 	}
 
-	//ÈÃPvcam×Ô¶¯Ê¶±ğÏà»ú²¢³õÊ¼»¯²¢´ò¿ªÏà»ú
+	//è®©Pvcamè‡ªåŠ¨è¯†åˆ«ç›¸æœºå¹¶åˆå§‹åŒ–å¹¶æ‰“å¼€ç›¸æœº
 	if (!T2Cam_InitAndOpenSpecificCamera(*(exp->MyCamera)))
 	{
 		exp->e = EXP_ERROR;
 		return;
 	}
 
-	//ÈÃÏà»ú¿ªÊ¼¹¤×÷£¬²¢¾¡¿ÉÄÜ¿ìµÄÅÄÕÕ
+	//è®©ç›¸æœºå¼€å§‹å·¥ä½œï¼Œå¹¶å°½å¯èƒ½å¿«çš„æ‹ç…§
 	if (!T2Cam_GrabFramesAsFastAsYouCan(*(exp->MyCamera)))
 	{
 		exp->e = EXP_ERROR;
@@ -429,7 +429,7 @@ void ReleaseExperiment(Experiment* exp) {
 	if (exp->MyLed != NULL)
 		free(exp->MyLed);
 
-	/** Release Udp Sender Í£Ö¹·¢ËÍĞÅºÅ **/
+	/** Release Udp Sender åœæ­¢å‘é€ä¿¡å· **/
 	exp->sender->stop();
 	if (exp->sender != NULL)
 		delete exp->sender;
@@ -477,7 +477,7 @@ void SetupGUI(Experiment* exp) {
 	cv::createTrackbar("Brightness", wincon, &(param->BrightnessPerc), 100, NULL);
 
 	/** Segmentation Parameters**/
-	cv::createTrackbar("MaskSelect", wincon, &(param->MaskStyle), 1, NULL);   //2024.6.22Ìí¼ÓmaskÑ¡Ôñ¿Ø¼ş
+	cv::createTrackbar("MaskSelect", wincon, &(param->MaskStyle), 1, NULL);   //2024.6.22æ·»åŠ maské€‰æ‹©æ§ä»¶
 
 	cv::createTrackbar("Threshold", wincon, &(param->BinThresh), 255,NULL);
 
@@ -496,7 +496,7 @@ void SetupGUI(Experiment* exp) {
 
 	cv::createTrackbar("TargetSeg", wincon, &(param->stageTargetSegment), 100, NULL);
 
-	/** µç³¡Ç¿¶È²ÎÊı **/
+	/** ç”µåœºå¼ºåº¦å‚æ•° **/
 	cv::createTrackbar("EF_Mode", wincon, &(param->EF_Mode), 2, NULL);
 
 	//printf("Created trackbars and windows\n");
@@ -535,7 +535,7 @@ void contiMoveAndSave(Experiment* exp)
  *
  */
 int HandleKeyStroke(int c, Experiment* exp) {
-	//²ÉÓÃLambda±íÊ¾º¯Êı£¬ÄÚÖÃº¯Êı
+	//é‡‡ç”¨Lambdaè¡¨ç¤ºå‡½æ•°ï¼Œå†…ç½®å‡½æ•°
 	auto func = [](Experiment* exp) -> void {
 		if (FindStagePosition(*(exp->MyStage)))
 			std::cout << "[x] " << exp->MyStage->AxisPos_x[0] << " : [y] " << exp->MyStage->AxisPos_y[0] << std::endl;
@@ -561,7 +561,7 @@ int HandleKeyStroke(int c, Experiment* exp) {
 		MoveRelative(exp->MyStage->handle, (float)(0.1), AXIS_X);
 		func(exp);
 		break;
-	case '5': //Í£ÏÂÎ»ÒÆÌ¨
+	case '5': //åœä¸‹ä½ç§»å°
 		HaltStage(*(exp->MyStage));
 		break;
 	case '8':
@@ -579,7 +579,7 @@ int HandleKeyStroke(int c, Experiment* exp) {
 		MoveRelative(exp->MyStage->handle, (float)(0.1), AXIS_Y);
 		func(exp);
 		break;
-	case 'r':  //¿ªÊ¼½øĞĞÊÓÆµ¼ÇÂ¼
+	case 'r':  //å¼€å§‹è¿›è¡Œè§†é¢‘è®°å½•
 		std::cout << std::endl;
 		std::cout << "************* Video Writer *************" << std::endl;
 		std::cout << "    Start Recording..." << std::endl;
@@ -587,7 +587,7 @@ int HandleKeyStroke(int c, Experiment* exp) {
 		exp->Params->Record = 1;
 		std::cout << "****************************************" << std::endl;
 		break;
-	case '\t': //¿ªÊ¼¸ú×Ù°´Å¥
+	case '\t': //å¼€å§‹è·Ÿè¸ªæŒ‰é’®
 		Toggle(&(exp->Params->stageTrackingOn));
 		if (exp->Params->stageTrackingOn == 0) {
 			/** If we are turning the stage off, let the rest of the code know **/
@@ -641,9 +641,9 @@ void InvokeStage(Experiment* exp) {
 	auto x = exp->x_initPos;
 	auto y = exp->y_initPos;
 
-	MoveToCenter(*(stage), x, y);   //ĞèÒªÍ¨¹ıÊÖ¶¯Ğ£×¼³ÌĞòÕÒµ½×ø±ê
+	MoveToCenter(*(stage), x, y);   //éœ€è¦é€šè¿‡æ‰‹åŠ¨æ ¡å‡†ç¨‹åºæ‰¾åˆ°åæ ‡
 
-	//³õÊ¼»¯Ö®ºóÁ¢Âí¸ù¾İ¿ØÖÆÃæ°åÉè¶¨µ±Ç°ËÙ¶È
+	//åˆå§‹åŒ–ä¹‹åç«‹é©¬æ ¹æ®æ§åˆ¶é¢æ¿è®¾å®šå½“å‰é€Ÿåº¦
 	spinStage(*exp->MyStage, exp->Params->maxstagespeed, exp->Params->maxstagespeed);
 
 	return;
@@ -685,32 +685,32 @@ void CalculateAndPrintFrameRate(Experiment* exp) {
  *
  */
 CvPoint calculateCentroid(CvSeq* Boundary) {
-	// ³õÊ¼»¯ÖØĞÄ×ø±ê
+	// åˆå§‹åŒ–é‡å¿ƒåæ ‡
 	double sumX = 0.0;
 	double sumY = 0.0;
 
-	// »ñÈ¡ÂÖÀªµãµÄ¸öÊı
+	// è·å–è½®å»“ç‚¹çš„ä¸ªæ•°
 	int totalPoints = Boundary->total;
 
-	// ±éÀúÃ¿¸öµã²¢ÀÛ¼Ó
+	// éå†æ¯ä¸ªç‚¹å¹¶ç´¯åŠ 
 	for (int i = 0; i < totalPoints; i++) {
-		// »ñÈ¡µÚ i ¸öµã
+		// è·å–ç¬¬ i ä¸ªç‚¹
 		CvPoint* pt = (CvPoint*)cvGetSeqElem(Boundary, i);
 
-		// ÀÛ¼Ó x ºÍ y ×ø±ê
+		// ç´¯åŠ  x å’Œ y åæ ‡
 		sumX += pt->x;
 		sumY += pt->y;
 	}
 
-	// ¼ÆËãÆ½¾ùÖµ£¨¼´ÖØĞÄ£©
+	// è®¡ç®—å¹³å‡å€¼ï¼ˆå³é‡å¿ƒï¼‰
 	CvPoint centroid;
-	centroid.x = cvRound(sumX / totalPoints);  // Ê¹ÓÃËÄÉáÎåÈëÈ¡Õû
-	centroid.y = cvRound(sumY / totalPoints);  // Ê¹ÓÃËÄÉáÎåÈëÈ¡Õû
+	centroid.x = cvRound(sumX / totalPoints);  // ä½¿ç”¨å››èˆäº”å…¥å–æ•´
+	centroid.y = cvRound(sumY / totalPoints);  // ä½¿ç”¨å››èˆäº”å…¥å–æ•´
 
 	return centroid;
 }
 
-//ÕÒµ½Ïß³æµÄÖØĞÄ
+//æ‰¾åˆ°çº¿è™«çš„é‡å¿ƒ
 int findWormCentroid(NeuronAnalysisData* Worm, NeuronAnalysisParam* Params)
 {
 	if (cvSeqExists(Worm->Boundary) == 0) {
@@ -754,7 +754,7 @@ void DoSegmentation(Experiment* exp) {
 	if (!(exp->e))
 		exp->e = GivenBoundaryFindWormHeadTail(exp->Neuron, exp->Params);
 
-	/** If we are doing temporal analysis, improve the WormHeadTail estimate based on prev frame ÕâÒ»¶Î¸Ä½øÊÇ¹Ø±ÕµÄ **/
+	/** If we are doing temporal analysis, improve the WormHeadTail estimate based on prev frame è¿™ä¸€æ®µæ”¹è¿›æ˜¯å…³é—­çš„ **/
 	if (exp->Params->TemporalOn && !(exp->e)) {
 		PrevFrameImproveWormHeadTail(exp->Neuron, exp->Params, exp->PrevWorm);
 	}
@@ -803,7 +803,7 @@ void DoSegmentation(Experiment* exp) {
 //	if (!(exp->e))
 //		exp->e = GivenBoundaryFindWormHeadTail(exp->Neuron, exp->Params);
 //
-//	/** If we are doing temporal analysis, improve the WormHeadTail estimate based on prev frame ÕâÒ»¶Î¸Ä½øÊÇ¹Ø±ÕµÄ **/
+//	/** If we are doing temporal analysis, improve the WormHeadTail estimate based on prev frame è¿™ä¸€æ®µæ”¹è¿›æ˜¯å…³é—­çš„ **/
 //	if (exp->Params->TemporalOn && !(exp->e)) {
 //		PrevFrameImproveWormHeadTail(exp->Neuron, exp->Params, exp->PrevWorm);
 //	}
@@ -846,7 +846,7 @@ void ShowContoursGrayImg(Experiment* exp)
 
 	CvSeq* PointTemp = exp->Neuron->Boundary;
 
-	//ÏÔÊ¾×î´óÏß³æµÄÂÖÀª
+	//æ˜¾ç¤ºæœ€å¤§çº¿è™«çš„è½®å»“
 	for (; PointTemp != NULL; PointTemp = PointTemp->h_next)
 	{
 		for (int i = 0; i < PointTemp->total; i++)
@@ -878,6 +878,8 @@ void ShowContoursGrayImg(Experiment* exp)
  *
  */
 int SetupRecording(Experiment* exp) {
+	int codec = CV_FOURCC('M', 'J', 'P', 'G');
+	double fps = 25.0;
 
 	printf("About to setup recording\n");
 	//char* DataFileName = NULL;
@@ -893,18 +895,21 @@ int SetupRecording(Experiment* exp) {
 	printf("Initialized data recording\n");
 	//DestroyFilename(&DataFileName);
 
-
-
 	/** Set Up Video Recording **/
 	char* MovieFileName;
 
 	MovieFileName = CreateFileName(exp->dirname, exp->outfname, ".avi");
 
-	exp->Vid = cvCreateVideoWriter(MovieFileName,
-		CV_FOURCC('M', 'J', 'P', 'G'), 25, cvSize(NSIZEX / 2, NSIZEY / 2),  //'M', 'J', 'P', 'G'
-		0);    //ĞŞ¸ÄÁË¼ÇÂ¼Ö¡Êı£¬½«Ö¡ÊıÉè¶¨Îª25Ö¡ £¨24/7/16) 
+	//exp->Vid = cvCreateVideoWriter(MovieFileName,
+	//	CV_FOURCC('M', 'J', 'P', 'G'), 25, cvSize(NSIZEX / 2, NSIZEY / 2),  //'M', 'J', 'P', 'G'
+	//	0);    //ä¿®æ”¹äº†è®°å½•å¸§æ•°ï¼Œå°†å¸§æ•°è®¾å®šä¸º25å¸§ ï¼ˆ24/7/16) 
+	exp->vid_writer.open(MovieFileName, codec, fps, cvSize(NSIZEX / 2, NSIZEY / 2), 0);  //2025-12-29 by ysh
 
-	if (exp->Vid == NULL) printf("\tERROR in SetupRecording! exp->Vid is NULL\nYou probably are missing the default codec.\n");
+	if (!exp->vid_writer.isOpened())
+	{
+		printf("\tERROR in SetupRecording! exp->Vid is NULL\nYou probably are missing the default codec.\n");
+		return -1;
+	}
 
 	DestroyFilename(&MovieFileName);
 	printf("Initialized video recording\n");
@@ -935,18 +940,19 @@ void FinishRecording(Experiment* exp) {
  *
  */
 void DoWriteToDisk(Experiment* exp, int distance) {
-	//ÔÚºóÌ¨¼ÇÂ¼ÊÓÆµÖĞ½øĞĞÍ¼ÏñĞÅÏ¢±ê¼Ç
+	//åœ¨åå°è®°å½•è§†é¢‘ä¸­è¿›è¡Œå›¾åƒä¿¡æ¯æ ‡è®°
 	//AddInfoText_Disk(exp, exp->fromCCD->iplimg, distance);
 
-	/** ¼ÇÂ¼ÊÓÆµÊı¾İ **/
+	/** è®°å½•è§†é¢‘æ•°æ® **/
 	if (exp->Params->Record) {
-		cvResize(exp->fromCCD->iplimg, exp->SubSampled, CV_INTER_LINEAR);
+		//cvResize(exp->fromCCD->iplimg, exp->SubSampled, CV_INTER_LINEAR);
 
-		cvWriteFrame(exp->Vid, exp->SubSampled);
+		//cvWriteFrame(exp->Vid, exp->SubSampled);
+		exp->vid_writer.write(exp->img_disp);
 		if (exp->Vid == NULL) printf("\tERROR in DoWriteToDisk!\n\texp->Vid is NULL\n");
 	}
 
-	/** ¼ÇÂ¼yamlÊı¾İ **/
+	/** è®°å½•yamlæ•°æ® **/
 	if (exp->Params->Record) {
 		AppendNeuronFrameToDisk(exp->Neuron, exp->Params, exp->DataWriter);
 	}
@@ -984,38 +990,38 @@ int AdjustStageToKeepObjectAtTarget(StageData* stage, CvPoint* obj, CvPoint targ
 	}
 
 #if 0
-//²éÑ¯Î»ÒÆÌ¨µ±Ç°ÔË¶¯×´Ì¬£¬Èç¹ûÎ»ÒÆÌ¨´¦ÓÚÒÆ¶¯×´Ì¬£¬ÔòÏŞÖÆÏÂÒ»´ÎÒÆ¶¯
-//SLS_DLL_API bool GetStation(int m_handle, int m_Axis, bool m_GetStation[1]);·µ»Øtrue±íÊ¾»ñÈ¡³É¹¦£¬false±íÊ¾»ñÈ¡Ê§°Ü
-//»ñÈ¡ÔË¶¯×´Ì¬ m_GetStation[0]=true ±íÊ¾ÔÚÔË¶¯ÖĞ m_GetStation[0]=false±íÊ¾ÔË¶¯Íê³É 
+//æŸ¥è¯¢ä½ç§»å°å½“å‰è¿åŠ¨çŠ¶æ€ï¼Œå¦‚æœä½ç§»å°å¤„äºç§»åŠ¨çŠ¶æ€ï¼Œåˆ™é™åˆ¶ä¸‹ä¸€æ¬¡ç§»åŠ¨
+//SLS_DLL_API bool GetStation(int m_handle, int m_Axis, bool m_GetStation[1]);è¿”å›trueè¡¨ç¤ºè·å–æˆåŠŸï¼Œfalseè¡¨ç¤ºè·å–å¤±è´¥
+//è·å–è¿åŠ¨çŠ¶æ€ m_GetStation[0]=true è¡¨ç¤ºåœ¨è¿åŠ¨ä¸­ m_GetStation[0]=falseè¡¨ç¤ºè¿åŠ¨å®Œæˆ 
 
 	bool m_GetStation_x[1] = { true };
 	bool m_GetStation_y[1] = { true };
-	// Ö»ÒªXÖá»òYÖáÖĞÈÎÒâÒ»¸öÔÚÒÆ¶¯£¬¾Í¼ÌĞøÑ­»·
+	// åªè¦Xè½´æˆ–Yè½´ä¸­ä»»æ„ä¸€ä¸ªåœ¨ç§»åŠ¨ï¼Œå°±ç»§ç»­å¾ªç¯
 	while (m_GetStation_x[0] || m_GetStation_y[0]) {
-		// »ñÈ¡XÖá×´Ì¬
+		// è·å–Xè½´çŠ¶æ€
 		if (!GetStation(stage->handle, AXIS_X, m_GetStation_x)) {
 			std::cout << "[Warning...] Can't get x Station during wait loop" << std::endl;
 			return -1;
 		}
-		// »ñÈ¡YÖá×´Ì¬
+		// è·å–Yè½´çŠ¶æ€
 		if (!GetStation(stage->handle, AXIS_Y, m_GetStation_y)) {
 			std::cout << "[Warning...] Can't get y Station during wait loop" << std::endl;
 			return -1;
 		}
 
-		// Èç¹ûÈÔÔÚÒÆ¶¯£¬Ôò½øĞĞ¶ÌÔİË¯Ãß£¬±ÜÃâCPU¿Õ×ª
+		// å¦‚æœä»åœ¨ç§»åŠ¨ï¼Œåˆ™è¿›è¡ŒçŸ­æš‚ç¡çœ ï¼Œé¿å…CPUç©ºè½¬
 		if (m_GetStation_x[0] || m_GetStation_y[0]) {
-			// ¿ÉÒÔ´òÓ¡×´Ì¬ÓÃÓÚµ÷ÊÔ
+			// å¯ä»¥æ‰“å°çŠ¶æ€ç”¨äºè°ƒè¯•
 			// std::cout << "Waiting for stage to stop... X_moving: " << m_GetStation_x[0] << ", Y_moving: " << m_GetStation_y[0] << std::endl;
-			std::this_thread::sleep_for(std::chrono::milliseconds(10)); // µÈ´ı10msÔÙ²é£¬±ÜÃâ¹ıÓÚÆµ·±
+			std::this_thread::sleep_for(std::chrono::milliseconds(10)); // ç­‰å¾…10mså†æŸ¥ï¼Œé¿å…è¿‡äºé¢‘ç¹
 		}
 	}
-	// --- µÈ´ıÂß¼­½áÊø£¬´ËÊ±Î»ÒÆÌ¨ÒÑ¾²Ö¹ ---
+	// --- ç­‰å¾…é€»è¾‘ç»“æŸï¼Œæ­¤æ—¶ä½ç§»å°å·²é™æ­¢ ---
 #endif
 
-	// Î»ÒÆÌ¨¾²Ö¹ºó£¬¿ªÊ¼¼ÆËãÏÂÒ»´ÎÒÆ¶¯
-	CvPoint diff;	//µ¥Î»£ºÏñËØ
-	float vel[2];	//µ¥Î»mm/s
+	// ä½ç§»å°é™æ­¢åï¼Œå¼€å§‹è®¡ç®—ä¸‹ä¸€æ¬¡ç§»åŠ¨
+	CvPoint diff;	//å•ä½ï¼šåƒç´ 
+	float vel[2];	//å•ä½mm/s
 	float dt = 0.08;
 
 	/** (stage-obj)*speed **/
@@ -1027,11 +1033,11 @@ int AdjustStageToKeepObjectAtTarget(StageData* stage, CvPoint* obj, CvPoint targ
 
 	// Error calculation for PID
 	float resolution = static_cast<float>(0.1 / 108);
-	float error_x = diff.x * resolution;	//µ¥Î»mm
+	float error_x = diff.x * resolution;	//å•ä½mm
 	float error_y = diff.y * resolution;
 
-	//Ç°À¡ËÙ¶È£¬×÷ÎªPIDµ÷½ÚÇ°µÄ»ù´¡
-	float v_ff_x = error_x / (stage->target_time / 1000.0f);	//µ¥Î»mm/s
+	//å‰é¦ˆé€Ÿåº¦ï¼Œä½œä¸ºPIDè°ƒèŠ‚å‰çš„åŸºç¡€
+	float v_ff_x = error_x / (stage->target_time / 1000.0f);	//å•ä½mm/s
 	float v_ff_y = error_y / (stage->target_time / 1000.0f);
 
 	// Calculate velocity using PID control for both axes
@@ -1039,13 +1045,13 @@ int AdjustStageToKeepObjectAtTarget(StageData* stage, CvPoint* obj, CvPoint targ
 	float pid_velocity_y = pidControl(error_y, stage->previous_error_y, stage->integral_y, stage->Kp_y, stage->Ki_y, stage->Kd_y, dt);
 
 	// Apply PID velocities to the stage
-	// Ê¹ÓÃ std::min ºÍ std::max ÏŞÖÆvel²»³¬¹ıÉè¶¨Öµ
+	// ä½¿ç”¨ std::min å’Œ std::max é™åˆ¶velä¸è¶…è¿‡è®¾å®šå€¼
 	vel[0] = std::max(static_cast<float>(-maxspeed), std::min(static_cast<float>(0.01 * v_ff_x + pid_velocity_x), static_cast<float>(maxspeed)));
 	vel[1] = std::max(static_cast<float>(-maxspeed), std::min(static_cast<float>(0.01 * v_ff_y + pid_velocity_y), static_cast<float>(maxspeed)));
 	// vel[0] = std::max(static_cast<float>(-maxspeed), std::min(static_cast<float>(0.8 * v_ff_x + pid_velocity_x), static_cast<float>(maxspeed)));
 	// vel[1] = std::max(static_cast<float>(-maxspeed), std::min(static_cast<float>(0.8 * v_ff_y + pid_velocity_y), static_cast<float>(maxspeed)));
 
-	// alphaÊÇÆ½»¬ÏµÊı£¬Ô½Ğ¡Ô½Æ½»¬£¬µ«ÏìÓ¦Ô½Âı¡£¿ÉÒÔ´Ó0.6-0.8¿ªÊ¼³¢ÊÔ
+	// alphaæ˜¯å¹³æ»‘ç³»æ•°ï¼Œè¶Šå°è¶Šå¹³æ»‘ï¼Œä½†å“åº”è¶Šæ…¢ã€‚å¯ä»¥ä»0.6-0.8å¼€å§‹å°è¯•
 	float alpha = 0.6f;
 	stage->smoothed_vel_x = alpha * vel[0] + (1.0f - alpha) * stage->smoothed_vel_x;
 	stage->smoothed_vel_y = alpha * vel[1] + (1.0f - alpha) * stage->smoothed_vel_y;
@@ -1057,7 +1063,7 @@ int AdjustStageToKeepObjectAtTarget(StageData* stage, CvPoint* obj, CvPoint targ
 	//vel[0] = (float)abs(0.1 * maxspeed * tanh(0.001 * diff.x * speedfactor));
 	//vel[1] = (float)abs(0.1 * maxspeed * tanh(0.001 * diff.y * speedfactor));
 
-	//ÏÖÔÚ¸ù¾İdiffÉè¶¨Á½¸öãĞÖµ£¬ÊµÏÖ¸ü¶àÑùµÄ¹¦ÄÜ
+	//ç°åœ¨æ ¹æ®diffè®¾å®šä¸¤ä¸ªé˜ˆå€¼ï¼Œå®ç°æ›´å¤šæ ·çš„åŠŸèƒ½
 	// Condition 1: If both diff.x and diff.y are less than 30, do not move the stage
 	if (abs(diff.x) < 30 && abs(diff.y) < 30) {
 		stage->smoothed_vel_x = 0;
@@ -1085,21 +1091,21 @@ int AdjustStageToKeepObjectAtTarget(StageData* stage, CvPoint* obj, CvPoint targ
 		std::cout << "Moving both axes. One of the diff.x and diff.y is greater than 90." << std::endl;
 	}
 
-	//Éè¶¨¼ÓËÙ¶È£¬Ä¿Ç°Éè¶¨Îªµ±Ç°Éè¶¨ËÙ¶ÈµÄ2±¶
+	//è®¾å®šåŠ é€Ÿåº¦ï¼Œç›®å‰è®¾å®šä¸ºå½“å‰è®¾å®šé€Ÿåº¦çš„2å€
 	AcDecSet(stage->handle, 8.0f, AXIS_X);
 	AcDecSet(stage->handle, 8.0f, AXIS_Y);
 
 	//std::cout << "vel x:" << vel[0] << " , vel y:" << vel[1] << std::endl;
 
-	//½«ËÙ¶È´«¸øÎ»ÒÆÌ¨
+	//å°†é€Ÿåº¦ä¼ ç»™ä½ç§»å°
 	spinStage(*stage, stage->smoothed_vel_x, stage->smoothed_vel_y);
 
-	// ¼ÆËãÔÚÕâÒ»¸öÊ±¼ä²½³¤(dt)ÄÚ£¬Î»ÒÆÌ¨Ó¦¸ÃÒÆ¶¯µÄÎ¢Ğ¡¾àÀë(mm)
+	// è®¡ç®—åœ¨è¿™ä¸€ä¸ªæ—¶é—´æ­¥é•¿(dt)å†…ï¼Œä½ç§»å°åº”è¯¥ç§»åŠ¨çš„å¾®å°è·ç¦»(mm)
 	float displacement_x = stage->smoothed_vel_x * dt / resolution;
 	float displacement_y = stage->smoothed_vel_y * dt / resolution;
 
 	switch (AxisLockState) {
-	case 0: // ×ÔÓÉÒÆ¶¯
+	case 0: // è‡ªç”±ç§»åŠ¨
 		MoveToTarget(*stage, displacement_x, displacement_y);
 		break;
 
@@ -1107,7 +1113,7 @@ int AdjustStageToKeepObjectAtTarget(StageData* stage, CvPoint* obj, CvPoint targ
 		MoveYToTarget(*stage, displacement_y);
 		break;
 
-	case 2: // Ëø¶¨ Y Öá, Ö»ÔÚ X ·½ÏòÒÆ¶¯
+	case 2: // é”å®š Y è½´, åªåœ¨ X æ–¹å‘ç§»åŠ¨
 		MoveXToTarget(*stage, displacement_x);
 		break;
 
@@ -1157,14 +1163,14 @@ int HandleStageTracker(Experiment* exp) {
 					exp->MyStage, PtOnWorm, target,
 					exp->Params->stageSpeedFactor, exp->Params->maxstagespeed, exp->Params->AxisLockState);
 
-					//¼ì²é·µ»ØÖµ
+					//æ£€æŸ¥è¿”å›å€¼
 				if (ret != 0) {
 					std::cout << "[ERROR] AdjustStage failed. Halting tracking." << std::endl;
-					//Èç¹ûµ×²ãº¯ÊıÊ§°Ü£¬Á¢¼´ÖĞÖ¹×Ô¼º£¬²¢½«´íÎóÂë´«µİÉÏÈ¥
+					//å¦‚æœåº•å±‚å‡½æ•°å¤±è´¥ï¼Œç«‹å³ä¸­æ­¢è‡ªå·±ï¼Œå¹¶å°†é”™è¯¯ç ä¼ é€’ä¸Šå»
 					return ret;
 				}
 
-				//±£´æÎ»ÒÆÌ¨Ö®Ç°µÄ×ø±ê
+				//ä¿å­˜ä½ç§»å°ä¹‹å‰çš„åæ ‡
 				exp->MyStage->prePos_x = exp->MyStage->AxisPos_x[0];
 				exp->MyStage->prePos_y = exp->MyStage->AxisPos_y[0];
 
@@ -1217,7 +1223,7 @@ int HandleStageTracker(Experiment* exp) {
 //					exp->MyStage, PtOnWorm, target,
 //					exp->Params->stageSpeedFactor, exp->Params->maxstagespeed, exp->Params->YMoveLock);
 //
-//				//±£´æÎ»ÒÆÌ¨Ö®Ç°µÄ×ø±ê
+//				//ä¿å­˜ä½ç§»å°ä¹‹å‰çš„åæ ‡
 //				exp->MyStage->prePos_x = exp->MyStage->AxisPos_x[0];
 //				exp->MyStage->prePos_y = exp->MyStage->AxisPos_y[0];
 //
@@ -1262,7 +1268,7 @@ int RecordStageTracker(Experiment* exp) {
 	return 0;
 }
 
-//ÔÚÍ¼Æ¬ÉÏÌí¼ÓLEDÒÔ¼°Ö¡ÂÊÏÔÊ¾ĞÅÏ¢
+//åœ¨å›¾ç‰‡ä¸Šæ·»åŠ LEDä»¥åŠå¸§ç‡æ˜¾ç¤ºä¿¡æ¯
 void AddInfoText_Exp(Experiment* exp, IplImage* image)
 {
 	//Led Info
@@ -1306,7 +1312,7 @@ void AddInfoText_Disk(Experiment* exp, IplImage* image, int distance)
 	CvFont led_font = cvFont(5, 7);
 	char distance_text[100] = "Dist:";
 
-	//½«LEDÁÁ¶Èµ÷ÕûÎª¾àÀë
+	//å°†LEDäº®åº¦è°ƒæ•´ä¸ºè·ç¦»
 	std::string str = std::to_string(distance);
 	strcat(distance_text, str.c_str());
 
@@ -1331,20 +1337,20 @@ void AddInfoText_Disk(Experiment* exp, IplImage* image, int distance)
 	cvPutText(image, fstr.c_str(), Frame_org, &Frame_font, scalar);
 }
 
-//¸ºÔğÏÔÊ¾Ïß³æµÄÍ¼Ïñ
+//è´Ÿè´£æ˜¾ç¤ºçº¿è™«çš„å›¾åƒ
 void ElegansImShow(Experiment* exp) {
 	switch (exp->Params->Display) {
 		case 0:
 		{
-			//ÏÔÊ¾ÔöÇ¿ºóµÄÔ­Í¼Ïñ
+			//æ˜¾ç¤ºå¢å¼ºåçš„åŸå›¾åƒ
 			IplImage* scaledImage = cvCreateImage(cvSize(800, 600), IPL_DEPTH_8U, 1);
 			cvResize(exp->fromCCD->iplimg, scaledImage, CV_INTER_LINEAR);
 			cvSmooth(scaledImage, scaledImage, CV_GAUSSIAN, 5, 5, 0, 0);
 
-			//ÔÚÊµÑéÍ¼ÏñÉÏ½øĞĞÌí¼Óµ±Ç°ÊµÑéÊı¾İĞÅÏ¢
+			//åœ¨å®éªŒå›¾åƒä¸Šè¿›è¡Œæ·»åŠ å½“å‰å®éªŒæ•°æ®ä¿¡æ¯
 			AddInfoText_Exp(exp, scaledImage);
 
-			//ÏÔÊ¾Í¼Ïñ²¢ÊÍ·Å·ÖÅäµÄÄÚ´æ
+			//æ˜¾ç¤ºå›¾åƒå¹¶é‡Šæ”¾åˆ†é…çš„å†…å­˜
 			cvShowImage(exp->WinDisp, scaledImage);
 			cvReleaseImage(&scaledImage);
 			break;

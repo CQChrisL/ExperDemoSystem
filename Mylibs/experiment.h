@@ -14,13 +14,13 @@
 class UDPSender {
 private:
 	std::atomic<bool> run_thread;
-	std::atomic<bool> run_square_wave;   //¿ØÖÆ·½²¨ĞÅºÅµÄÔËĞĞ
-	std::atomic<char> volChannel;        //Êä³öÍ¨µÀºÅ
-	std::atomic<char> volDir;            //Êä³öµçÑ¹·½Ïò 0-ÕıÏò 1-¸ºÏò Ä¬ÈÏ0
-	std::atomic<char> message;           //Êä³öµçÑ¹·ùÖµ
-	std::atomic<char> volWave;             //µçÑ¹²¨ĞÎ
+	std::atomic<bool> run_square_wave;   //æ§åˆ¶æ–¹æ³¢ä¿¡å·çš„è¿è¡Œ
+	std::atomic<char> volChannel;        //è¾“å‡ºé€šé“å·
+	std::atomic<char> volDir;            //è¾“å‡ºç”µå‹æ–¹å‘ 0-æ­£å‘ 1-è´Ÿå‘ é»˜è®¤0
+	std::atomic<char> message;           //è¾“å‡ºç”µå‹å¹…å€¼
+	std::atomic<char> volWave;             //ç”µå‹æ³¢å½¢
 	std::thread udp_thread;
-	std::thread square_wave_thread;  // ±£´æ·½²¨Ïß³ÌµÄÒıÓÃ
+	std::thread square_wave_thread;  // ä¿å­˜æ–¹æ³¢çº¿ç¨‹çš„å¼•ç”¨
 	SOCKET sockfd;
 	struct sockaddr_in servaddr;
 
@@ -33,7 +33,7 @@ public:
 	void stop();
 	void changeMessage(char newChannel, char newDir, char newMessage, char newWave);
 	void SquareWave(char Amplitude, int Frequency, int DutyCycle);
-	void stopSquareWave(); // ĞÂÔöÍ£Ö¹·½²¨ĞÅºÅµÄº¯Êı
+	void stopSquareWave(); // æ–°å¢åœæ­¢æ–¹æ³¢ä¿¡å·çš„å‡½æ•°
 	WaveType curType = WaveType::None;
 };
 
@@ -78,11 +78,12 @@ typedef struct ExperimentStruct{
 	WriteOut* DataWriter;
 
 	/** Write Video To File **/
-	CvVideoWriter* Vid;  //Video Writer
-	double standardCorX;   //Ïà¶ÔÓÚ×ø±êµãµÄ±ê×¼×ø±ê
+	//CvVideoWriter* Vid;  //Video Writer
+	cv::VideoWriter vid_writer;  //é‡‡ç”¨opencv340çš„videowriterè®°å½•è§†é¢‘
+	double standardCorX;   //ç›¸å¯¹äºåæ ‡ç‚¹çš„æ ‡å‡†åæ ‡
 	double standardCorY;
-	int Voltage;  //¼ÇÂ¼µç³¡µÄµçÑ¹
-	double cur_velocity;   //Ïß³æµÄËÙ¶È  µ¥Î»um/s
+	int Voltage;  //è®°å½•ç”µåœºçš„ç”µå‹
+	double cur_velocity;   //çº¿è™«çš„é€Ÿåº¦  å•ä½um/s
 	
 
 	/** Timing  Information **/
@@ -98,14 +99,14 @@ typedef struct ExperimentStruct{
 	/** Stage Control **/
 	StageData* MyStage;
 	int stageIsPresent;
-	int stage; // Handle to USB stage object    ÎÒÃÇµÄStage handleÊÇÒ»¸öintÕûĞÍ
+	int stage; // Handle to USB stage object    æˆ‘ä»¬çš„Stage handleæ˜¯ä¸€ä¸ªintæ•´å‹
 	CvPoint stageVel; //Current velocity of stage
 	CvPoint stageCenter; // Point indicating center of stage.
 	CvPoint stageFeedbackTargetOffset; //Target of the stage feedback loop as a delta distance in pixels from the center of the image
 	int stageIsTurningOff; //1 indicates stage is turning off. 0 indicates stage is on or off.
 	float x_initPos;
 	float y_initPos;
-	std::queue<double>* NemDisp;   //´ú±íÏß³æµÄÎ»ÒÆ
+	std::queue<double>* NemDisp;   //ä»£è¡¨çº¿è™«çš„ä½ç§»
 
 	/** TLDC LED input **/
 	LedData* MyLed;
@@ -113,12 +114,14 @@ typedef struct ExperimentStruct{
 	/** Error Handling **/
 	int e;
 
-	//UDP Ä£¿é
+	//UDP æ¨¡å—
 	UDPSender* sender;
 
-	//Î»ÒÆÀÛ¼Ó
+	//ä½ç§»ç´¯åŠ 
 	CvPoint pos_accumulate;
 	int pos_num;
+
+	cv::Mat img_disp;
 } Experiment;
 
 /*
@@ -322,13 +325,13 @@ int RecordStageTracker(Experiment* exp);
 
 void ShowContoursGrayImg(Experiment* exp);
 
-//ÔÚÍ¼Æ¬ÉÏÌí¼ÓLEDÒÔ¼°Ö¡ÂÊÏÔÊ¾ĞÅÏ¢_ÊµÑéÖĞ
+//åœ¨å›¾ç‰‡ä¸Šæ·»åŠ LEDä»¥åŠå¸§ç‡æ˜¾ç¤ºä¿¡æ¯_å®éªŒä¸­
 void AddInfoText_Exp(Experiment* exp, IplImage* image);
 
-//ÔÚÍ¼Æ¬ÉÏÌí¼ÓLEDÒÔ¼°Ö¡ÂÊÏÔÊ¾ĞÅÏ¢_ºóÌ¨Êı¾İ¼ÇÂ¼
+//åœ¨å›¾ç‰‡ä¸Šæ·»åŠ LEDä»¥åŠå¸§ç‡æ˜¾ç¤ºä¿¡æ¯_åå°æ•°æ®è®°å½•
 void AddInfoText_Disk(Experiment* exp, IplImage* image, int distance);
 
-//¸ºÔğÏÔÊ¾Ïß³æµÄÍ¼Ïñ
+//è´Ÿè´£æ˜¾ç¤ºçº¿è™«çš„å›¾åƒ
 void ElegansImShow(Experiment* exp);
 
 #endif /* EXPERIMENT_H_ */
