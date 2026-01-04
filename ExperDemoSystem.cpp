@@ -10,24 +10,24 @@ ExperDemoSystem::ExperDemoSystem(QWidget* parent)
 {
     ui.setupUi(this);
 
-    // È·±£´°¿Ú²¿¼ş¿ÉÒÔ½ÓÊÕµ½¼üÅÌÊÂ¼ş
+    // ç¡®ä¿çª—å£éƒ¨ä»¶å¯ä»¥æ¥æ”¶åˆ°é”®ç›˜äº‹ä»¶
     setFocusPolicy(Qt::StrongFocus);
 
-    //ÓÃÓÚÎ»ÒÆÌ¨°´¼üÁ¬Ğø´¥·¢
+    //ç”¨äºä½ç§»å°æŒ‰é”®è¿ç»­è§¦å‘
     KeyTimerConnect();
 
-    //Á¬½ÓSpinBoxÍê³ÉĞÅºÅ
+    //è¿æ¥SpinBoxå®Œæˆä¿¡å·
     m_SpinBoxFinished();
 
-    //Á¬½ÓtcpÌ×½Ó×ÖµÄĞÅºÅÓë²Ûº¯Êı
+    //è¿æ¥tcpå¥—æ¥å­—çš„ä¿¡å·ä¸æ§½å‡½æ•°
     TcpSocketSlotConnection();
 
-    //ÊÇ·ñ´ò¿ªGUIµ÷ÊÔ¹¦ÄÜ - µ¥´¿ÏÔÊ¾½çÃæ
+    //æ˜¯å¦æ‰“å¼€GUIè°ƒè¯•åŠŸèƒ½ - å•çº¯æ˜¾ç¤ºç•Œé¢
     Gui_Debug = false;
     
     this->e = 0;       
 
-    //³õÊ¼»¯Éè±¸µÈ
+    //åˆå§‹åŒ–è®¾å¤‡ç­‰
     this->e = PreCamOperation();
 
     if (this->e != 0)
@@ -35,37 +35,37 @@ ExperDemoSystem::ExperDemoSystem(QWidget* parent)
 
     if (!Gui_Debug) {
 
-        //Ïà»úÅÄÉãÏß³Ì ÓÃÓÚÏà»ú²»¼ä¶ÏÅÄÉã
+        //ç›¸æœºæ‹æ‘„çº¿ç¨‹ ç”¨äºç›¸æœºä¸é—´æ–­æ‹æ‘„
         m_cameraThread = QThread::create([this]() { captureImage(); });
         connect(m_cameraThread, &QThread::finished, m_cameraThread, &QObject::deleteLater);
         m_cameraThread->start();
 
-        //Î»ÒÆÌ¨ÒÆ¶¯Ïß³Ì
+        //ä½ç§»å°ç§»åŠ¨çº¿ç¨‹
         m_stageThread = QThread::create([this]() { moveStage(); });
         connect(m_stageThread, &QThread::finished, m_stageThread, &QObject::deleteLater);
         m_stageThread->start();
     }
     {
-        //¼ÇÂ¼Ïß³Ì
+        //è®°å½•çº¿ç¨‹
         m_recordThread = QThread::create([this]() { recordData(); });
         connect(m_recordThread, &QThread::finished, m_recordThread, &QObject::deleteLater);
         m_recordThread->start();
     }
 
-    //ÉèÖÃ¶¨Ê±Æ÷ÊÂ¼şÏÔÊ¾Í¼Æ¬ - ´æÔÚÖ÷Ïß³ÌÖĞ£¬ÓÃÓÚÓë´¥·¢ÊÂ¼ş´®ĞĞ
+    //è®¾ç½®å®šæ—¶å™¨äº‹ä»¶æ˜¾ç¤ºå›¾ç‰‡ - å­˜åœ¨ä¸»çº¿ç¨‹ä¸­ï¼Œç”¨äºä¸è§¦å‘äº‹ä»¶ä¸²è¡Œ
     startTimer(50);
 
-	// ³õÊ¼»¯µç³¡¼ÆÊ±Æ÷
-	m_efTimer = new QTimer(this); // ´´½¨QTimerÊµÀı
-	connect(m_efTimer, &QTimer::timeout, this, &ExperDemoSystem::updateTimerDisplay); // Á¬½ÓĞÅºÅºÍ²Û
-	m_efTimer->start(100); // ÉèÖÃÃ¿100ºÁÃë¸üĞÂÒ»´Î½çÃæ£¨¼´Ã¿Ãë10´Î£©
-	m_efElapsedTime.start(); // Á¢¼´¿ªÊ¼¼ÆÊ±
+	// åˆå§‹åŒ–ç”µåœºè®¡æ—¶å™¨
+	m_efTimer = new QTimer(this); // åˆ›å»ºQTimerå®ä¾‹
+	connect(m_efTimer, &QTimer::timeout, this, &ExperDemoSystem::updateTimerDisplay); // è¿æ¥ä¿¡å·å’Œæ§½
+	m_efTimer->start(100); // è®¾ç½®æ¯100æ¯«ç§’æ›´æ–°ä¸€æ¬¡ç•Œé¢ï¼ˆå³æ¯ç§’10æ¬¡ï¼‰
+	m_efElapsedTime.start(); // ç«‹å³å¼€å§‹è®¡æ—¶
 }
 
-//Îö¹¹º¯Êı ³ÌĞò½áÊø´¥·¢
+//ææ„å‡½æ•° ç¨‹åºç»“æŸè§¦å‘
 ExperDemoSystem::~ExperDemoSystem()
 {
-    //½«Ïß³Ì±ê¼ÇÇå¿Õ
+    //å°†çº¿ç¨‹æ ‡è®°æ¸…ç©º
     m_cam_running = false;
     m_stage_running = false;
     m_record_running = false;
@@ -81,21 +81,21 @@ ExperDemoSystem::~ExperDemoSystem()
     m_recordThread->quit();
     m_recordThread->wait();
 
-    //½áÊø¼ÇÂ¼
+    //ç»“æŸè®°å½•
     FinishRecording(exp);
 
-    //ÊÍ·Åexp½á¹¹Ìå
+    //é‡Šæ”¾expç»“æ„ä½“
     if (this->exp) {
         ReleaseExperiment(this->exp);
         DestroyExperiment(&this->exp);
     }
 }
 
-/******************** Ö÷ÒªÒµÎñÊµÏÖ²¿·Ö *********************/
+/******************** ä¸»è¦ä¸šåŠ¡å®ç°éƒ¨åˆ† *********************/
 
-//Í¬²½¿ØÖÆ½çÃæ²ÎÊı
+//åŒæ­¥æ§åˆ¶ç•Œé¢å‚æ•°
 void ExperDemoSystem::SynchroControlPanel() {
-    /* Í¼ÏñÏÔÊ¾²ÎÊı¿Ø¼ş */
+    /* å›¾åƒæ˜¾ç¤ºå‚æ•°æ§ä»¶ */
     exp->Params->MaskDiameter = ui.Diameter->value();
     exp->Params->MaskStyle = ui.CircleRbt->isChecked() ? 0 : 1;
     exp->Params->LowBoundary = ui.UpBoundary->value();
@@ -104,25 +104,25 @@ void ExperDemoSystem::SynchroControlPanel() {
     //exp->Params->DilatePm = ui.DilateSlider->value();
     exp->Params->ErodePm = ui.ErodesSlider->value();
 
-    /* Î»ÒÆÌ¨²ÎÊı¿Ø¼ş */
+    /* ä½ç§»å°å‚æ•°æ§ä»¶ */
     exp->Params->maxstagespeed = ui.StageSpeed->value();
     //spinStage(*exp->MyStage, exp->Params->maxstagespeed, exp->Params->maxstagespeed);
 
-    /* ¹âÒÅ´«´Ì¼¤¿Ø¼ş²ÎÊı */
+    /* å…‰é—ä¼ åˆºæ¿€æ§ä»¶å‚æ•° */
     exp->Params->BrightnessPerc = ui.LedSlider->value();
 }
 
-//³õÊ¼»¯º¯Êı
+//åˆå§‹åŒ–å‡½æ•°
 int ExperDemoSystem::PreCamOperation()
 {
-    //´´½¨²¢³õÊ¼»¯½á¹¹Ìå
+    //åˆ›å»ºå¹¶åˆå§‹åŒ–ç»“æ„ä½“
     this->exp = CreateExperimentStruct();
     InitializeExperiment(this->exp);
 
-    //Í¬²½¿ØÖÆ½çÃæ²ÎÊı
+    //åŒæ­¥æ§åˆ¶ç•Œé¢å‚æ•°
     SynchroControlPanel();
 
-    //³õÊ¼»¯¼¸¸ö²ÎÊıÄ£¿é
+    //åˆå§‹åŒ–å‡ ä¸ªå‚æ•°æ¨¡å—
     totalDistance = 0;
     curVelocity = 0;
     moveStep = 0.05;
@@ -142,14 +142,14 @@ int ExperDemoSystem::PreCamOperation()
         {9, 16}
     };
 
-    //´´½¨»Ò¶ÈÖ±·½Í¼
+    //åˆ›å»ºç°åº¦ç›´æ–¹å›¾
     //initHistogram();
 
-    if (!Gui_Debug) { // Èç¹ûÊÇµ÷ÊÔÄ£Ê½½«²»Ö´ĞĞ
-        //³õÊ¼»¯Ïà»ú
+    if (!Gui_Debug) { // å¦‚æœæ˜¯è°ƒè¯•æ¨¡å¼å°†ä¸æ‰§è¡Œ
+        //åˆå§‹åŒ–ç›¸æœº
         RollCameraInput(exp);
 
-        //³õÊ¼»¯Led¿ØÖÆÄ£¿é
+        //åˆå§‹åŒ–Ledæ§åˆ¶æ¨¡å—
         //RollLedInput(exp);
     }
 
@@ -157,7 +157,7 @@ int ExperDemoSystem::PreCamOperation()
     else return 0;
 }
 
-//½«mat¸ñÊ½×ª»»ÎªqImage¸ñÊ½
+//å°†matæ ¼å¼è½¬æ¢ä¸ºqImageæ ¼å¼
 QImage ExperDemoSystem::MatToImage(const cv::Mat& mat) {
     if (mat.empty()) {
         return QImage();
@@ -183,7 +183,7 @@ QImage ExperDemoSystem::MatToImage(const cv::Mat& mat) {
     return QImage();
 }
 
-//ÓÃÓÚ»æÖÆÖ±·½Í¼
+//ç”¨äºç»˜åˆ¶ç›´æ–¹å›¾
 cv::Mat drawHistogram(const cv::Mat& grayImage) {
     // Calculate histogram
     int histSize = 256;
@@ -213,31 +213,31 @@ cv::Mat drawHistogram(const cv::Mat& grayImage) {
     return histImage;
 }
 
-//ÓÃÓÚ¸ømat¸ñÊ½Í¼Æ¬Ìí¼ÓĞÅÏ¢
+//ç”¨äºç»™matæ ¼å¼å›¾ç‰‡æ·»åŠ ä¿¡æ¯
 void addTextToImage(cv::Mat& image, const std::string& text1, const std::string& text2) {
-    // ÉèÖÃ×ÖÌåÀàĞÍºÍËõ·ÅÒò×Ó
+    // è®¾ç½®å­—ä½“ç±»å‹å’Œç¼©æ”¾å› å­
     int fontFace = cv::FONT_HERSHEY_SIMPLEX;
     double fontScale = 2.0;
     int thickness = 2;
-    cv::Scalar color(255, 255, 255); // °×É«
+    cv::Scalar color(255, 255, 255); // ç™½è‰²
 
-    // ¼ÆËãÎÄ±¾µÄ³ß´ç
+    // è®¡ç®—æ–‡æœ¬çš„å°ºå¯¸
     int baseline = 0;
     cv::Size textSize1 = cv::getTextSize(text1, fontFace, fontScale, thickness, &baseline);
     cv::Size textSize2 = cv::getTextSize(text2, fontFace, fontScale, thickness, &baseline);
 
-    // ÉèÖÃÎÄ±¾Î»ÖÃ
-    cv::Point textOrg1(10, textSize1.height + 10); // ×óÉÏ½Ç£¬Àë¶¥²¿ºÍ×ó²à¸÷10¸öÏñËØ
-    cv::Point textOrg2(image.cols - textSize2.width - 10, textSize2.height + 10); // ÓÒÉÏ½Ç£¬Àë¶¥²¿ºÍÓÒ²à¸÷10¸öÏñËØ
+    // è®¾ç½®æ–‡æœ¬ä½ç½®
+    cv::Point textOrg1(10, textSize1.height + 10); // å·¦ä¸Šè§’ï¼Œç¦»é¡¶éƒ¨å’Œå·¦ä¾§å„10ä¸ªåƒç´ 
+    cv::Point textOrg2(image.cols - textSize2.width - 10, textSize2.height + 10); // å³ä¸Šè§’ï¼Œç¦»é¡¶éƒ¨å’Œå³ä¾§å„10ä¸ªåƒç´ 
 
-    // ÔÚÍ¼ÏñÉÏÌí¼ÓÎÄ±¾
+    // åœ¨å›¾åƒä¸Šæ·»åŠ æ–‡æœ¬
     cv::putText(image, text1, textOrg1, fontFace, fontScale, color, thickness, 8);
     cv::putText(image, text2, textOrg2, fontFace, fontScale, color, thickness, 8);
 }
 
-//ÓÃÓÚÓĞ¹ØÏß³æÍ¼ÏñµÄÏÔÊ¾²Ù×÷¶¼·ÅÔÚÕâÀï
+//ç”¨äºæœ‰å…³çº¿è™«å›¾åƒçš„æ˜¾ç¤ºæ“ä½œéƒ½æ”¾åœ¨è¿™é‡Œ
 void ExperDemoSystem::ImageLabel() {
-    //½«Iplimage¸ñÊ½×ª»»ÎªMat¸ñÊ½
+    //å°†Iplimageæ ¼å¼è½¬æ¢ä¸ºMatæ ¼å¼
     CvSize CurrentSize = cvGetSize(exp->fromCCD->iplimg);
     IplImage* image = cvCreateImage(CurrentSize, IPL_DEPTH_8U, 1);
     cvZero(image);
@@ -246,11 +246,12 @@ void ExperDemoSystem::ImageLabel() {
     IplImage* procImage = exp->Neuron->ImgThresh;
 
     cv::Mat mat = cv::cvarrToMat(image);
+    exp->img_disp = cv::cvarrToMat(image);  //å°†æ˜¾ç¤ºçš„å›¾åƒæ‹·è´åˆ°expä¸­ç”¨äºè§†é¢‘è®°å½•
     cv::Mat procmat = cv::cvarrToMat(procImage);
 
     std::string eleganNum = "Test_" + std::to_string(ui.expNum->value());
 	std::ostringstream oss;
-	oss << std::fixed << std::setprecision(2) << exp->Params->standardCorX; // ¹Ì¶¨¸ñÊ½£¬Á½Î»Ğ¡Êı
+	oss << std::fixed << std::setprecision(2) << exp->Params->standardCorX; // å›ºå®šæ ¼å¼ï¼Œä¸¤ä½å°æ•°
 	std::string eleganDistance = " Distance: " + oss.str();
     std::string result = eleganNum + eleganDistance;
     addTextToImage(mat, result, std::to_string(exp->Neuron->frameNum));
@@ -258,18 +259,18 @@ void ExperDemoSystem::ImageLabel() {
     cv::resize(mat, mat, cv::Size(800, 600));
     cv::resize(procmat, procmat, cv::Size(800, 600));
 
-    //½«Mat¸ñÊ½×ª»¯ÎªQImage¸ñÊ½
-    QImage qImage = MatToImage(mat);           //Ô­Ê¼Í¼Ïñ
-    QImage pImage = MatToImage(procmat);       //´¦ÀíºóÍ¼Ïñ
+    //å°†Matæ ¼å¼è½¬åŒ–ä¸ºQImageæ ¼å¼
+    QImage qImage = MatToImage(mat);           //åŸå§‹å›¾åƒ
+    QImage pImage = MatToImage(procmat);       //å¤„ç†åå›¾åƒ
 
-    //ÏÔÊ¾Í¼Ïñ
+    //æ˜¾ç¤ºå›¾åƒ
     ui.ElegansImage->setPixmap(QPixmap::fromImage(qImage));
     ui.ProcImage->setPixmap(QPixmap::fromImage(pImage));
 
     cvReleaseImage(&image);
 }
 
-//¶¨Ê±Æ÷ÊÂ¼ş ÓÃÓÚÏÔÊ¾Í¼Ïñ
+//å®šæ—¶å™¨äº‹ä»¶ ç”¨äºæ˜¾ç¤ºå›¾åƒ
 void ExperDemoSystem::timerEvent(QTimerEvent* e)
 {
     //readFromServer();
@@ -277,41 +278,41 @@ void ExperDemoSystem::timerEvent(QTimerEvent* e)
     if (exp->fromCCD->iplimg == nullptr) return;
 
     if (ExpCanStart) {
-        //Ö»ÓĞµ±Î»ÒÆÌ¨×¼±¸ºÃÁË²ÅÄÜ¿ªÊ¼½øĞĞÊµÑé ½ö´¥·¢Ò»´ÎÁ¢Âí½«FlagÖÃ·´
+        //åªæœ‰å½“ä½ç§»å°å‡†å¤‡å¥½äº†æ‰èƒ½å¼€å§‹è¿›è¡Œå®éªŒ ä»…è§¦å‘ä¸€æ¬¡ç«‹é©¬å°†Flagç½®å
         ui.ExpBegin->setStyleSheet("background-color: rgb(85, 170, 0);");
         ExpCanStart = false;
     }
 
-    //Èç¹ûÎ»ÒÆÌ¨Îª¿Õ»òÕßÃ»ÓĞ×¼±¸ºÃ£¬¾Í²»ÏÔÊ¾Í¼Ïñ
+    //å¦‚æœä½ç§»å°ä¸ºç©ºæˆ–è€…æ²¡æœ‰å‡†å¤‡å¥½ï¼Œå°±ä¸æ˜¾ç¤ºå›¾åƒ
     if (exp->MyStage == NULL || !exp->MyStage->stageIsPresent)
     {
         return;
     }
 
-    //´Ó·şÎñÆ÷¶ÁÈ¡Êı¾İ
+    //ä»æœåŠ¡å™¨è¯»å–æ•°æ®
     //readFromServer();
 
-    //¼ÆËãÏß³æÍ¼ÏñÏà¶Ô×ø±ê
+    //è®¡ç®—çº¿è™«å›¾åƒç›¸å¯¹åæ ‡
     auto x = 0 - nematodePosition_x + exp->MyStage->AxisPos_x[0];
     auto y = nematodePosition_y - exp->MyStage->AxisPos_y[0];
 
-    //½«×ø±êÏÔÊ¾ÔÚ½çÃæÉÏ
-    exp->Params->standardCorX = x;   //½«¸Ã×ø±ê´«»ØexpÓÃÓÚyaml¼ÇÂ¼
+    //å°†åæ ‡æ˜¾ç¤ºåœ¨ç•Œé¢ä¸Š
+    exp->Params->standardCorX = x;   //å°†è¯¥åæ ‡ä¼ å›expç”¨äºyamlè®°å½•
     exp->Params->standardCorY = y;
     ui.xPos->setText(QString::number(x * 1000, 'f', 2));
     ui.yPos->setText(QString::number(y * 1000, 'f', 2));
-    ui.curVelocity->setText(QString::number(curVelocity * 1000, 'f', 2));  //½«µ±Ç°Ïß³æËÙ¶ÈÒ²ÏÔÊ¾ÔÚ½çÃæÉÏ µ¥Î»um/s
+    ui.curVelocity->setText(QString::number(curVelocity * 1000, 'f', 2));  //å°†å½“å‰çº¿è™«é€Ÿåº¦ä¹Ÿæ˜¾ç¤ºåœ¨ç•Œé¢ä¸Š å•ä½um/s
 
-    exp->Params->cur_velocity = curVelocity * 1000;  //½«µ±Ç°Ïß³æËÙ¶ÈÖµ´«»ØexpÓÃÓÚyaml¼ÇÂ¼  µ¥Î»um/s
-    exp->Params->Voltage = RealVoltage[Amp];   //½«µ±Ç°µç³¡Öµ´«»ØexpÓÃÓÚyaml¼ÇÂ¼
+    exp->Params->cur_velocity = curVelocity * 1000;  //å°†å½“å‰çº¿è™«é€Ÿåº¦å€¼ä¼ å›expç”¨äºyamlè®°å½•  å•ä½um/s
+    exp->Params->Voltage = RealVoltage[Amp];   //å°†å½“å‰ç”µåœºå€¼ä¼ å›expç”¨äºyamlè®°å½•
 
-	//½«Í¼Ïñ¶¼ÏÔÊ¾µ½QLabelÉÏ
+	//å°†å›¾åƒéƒ½æ˜¾ç¤ºåˆ°QLabelä¸Š
 	ImageLabel();
 }
 
-//Ïß³Ì1£ºÓÃÓÚÏà»ú²»¼ä¶ÏÅÄÕÕ
+//çº¿ç¨‹1ï¼šç”¨äºç›¸æœºä¸é—´æ–­æ‹ç…§
 void ExperDemoSystem::captureImage() {
-    //ÉèÖÃ¼ÆÊıÆ÷
+    //è®¾ç½®è®¡æ•°å™¨
     StartFrameRateTimer(exp);
     while (m_cam_running) {
         if (exp->e == -1 && (exp->Neuron->timestamp - exp->prevTime) > CLOCKS_PER_SEC)
@@ -320,31 +321,31 @@ void ExperDemoSystem::captureImage() {
         }
         exp->e = 0;
 
-        /** ²É¼¯ÕÕÆ¬ **/
+        /** é‡‡é›†ç…§ç‰‡ **/
         if (GrabFrame(exp) == -1) break;
 
-        /** ¼ÆËãÖ¡ÂÊ²¢±£´æÖÁexpÒÔÈ¡ÓÃ **/
+        /** è®¡ç®—å¸§ç‡å¹¶ä¿å­˜è‡³expä»¥å–ç”¨ **/
         CalculateAndPrintFrameRate(exp);
 
-        //½çÃæÏÔÊ¾µ±Ç°Ö¡ÂÊ
+        //ç•Œé¢æ˜¾ç¤ºå½“å‰å¸§ç‡
         ui.FPS->setText(QString("%1").arg(exp->FramePerSec));
 
-        /** ½«Ïà»úÖĞÅÄµ½µÄÍ¼Ïñµ¼ÈëNeuronµÈ´ı´¦Àí **/
+        /** å°†ç›¸æœºä¸­æ‹åˆ°çš„å›¾åƒå¯¼å…¥Neuronç­‰å¾…å¤„ç† **/
         if (exp->e == 0) {
             exp->e = LoadNeuronImg(exp->Neuron, exp->Params, exp->fromCCD->iplimg, exp->stageFeedbackTargetOffset);
         }
 
         if (exp->Params->OnOff) {
-            /** ¶Ô²É¼¯µ½µÄÍ¼Ïñ½øĞĞÇĞ¸î **/
+            /** å¯¹é‡‡é›†åˆ°çš„å›¾åƒè¿›è¡Œåˆ‡å‰² **/
             DoSegmentation(exp);
         }
     }
 
-    //¹Ø±ÕÏà»ú
+    //å…³é—­ç›¸æœº
     T2Cam_TurnOff(*(this->exp->MyCamera));
 }
 
-//¼ÆËãµ±Ç°Ïß³æËÙ¶È
+//è®¡ç®—å½“å‰çº¿è™«é€Ÿåº¦
 double NematodeDisplace(Experiment* exp, int delay, double& totalDiatance) {
     auto preX = exp->MyStage->prePos_x, preY = exp->MyStage->prePos_y;
     auto curX = exp->MyStage->AxisPos_x[0], curY = exp->MyStage->AxisPos_y[0];
@@ -363,7 +364,7 @@ double NematodeDisplace(Experiment* exp, int delay, double& totalDiatance) {
         mq->push(distance);
         totalDiatance += distance;
 
-        double time = (delay * 5) / 1000;//¼ÆËãmq¶ÓÁĞÖĞ5´Î¸ú×ÙµÄ×ÜÎ»ÒÆ£¬È»ºóÆ½¾ùËã³öÔË¶¯ËÙ¶È
+        double time = (delay * 5) / 1000;//è®¡ç®—mqé˜Ÿåˆ—ä¸­5æ¬¡è·Ÿè¸ªçš„æ€»ä½ç§»ï¼Œç„¶åå¹³å‡ç®—å‡ºè¿åŠ¨é€Ÿåº¦
 
         return totalDiatance / time;
     }
@@ -371,13 +372,13 @@ double NematodeDisplace(Experiment* exp, int delay, double& totalDiatance) {
     return 0;
 }
 
-//Ïß³Ì2£ºÓÃÓÚÎ»ÒÆÌ¨×Ô¶¯¸ú×Ù
+//çº¿ç¨‹2ï¼šç”¨äºä½ç§»å°è‡ªåŠ¨è·Ÿè¸ª
 void ExperDemoSystem::moveStage() {
     std::cout << std::endl;
     std::cout << "************ Stage ************" << std::endl;
     std::cout << "invoking stage..." << std::endl;
 
-    //Éè¶¨Î»ÒÆÌ¨³õÊ¼µÄÎ»ÖÃ  Ïß³ÌÀïµÄÑ­»·£¬ÎÒÏëÈÃËüÒ»ÃëÖÓÖ´ĞĞ2´Î
+    //è®¾å®šä½ç§»å°åˆå§‹çš„ä½ç½®  çº¿ç¨‹é‡Œçš„å¾ªç¯ï¼Œæˆ‘æƒ³è®©å®ƒä¸€ç§’é’Ÿæ‰§è¡Œ2æ¬¡
     exp->x_initPos = static_cast<float>(82.3);
     exp->y_initPos = static_cast<float>(47.4);
     InvokeStage(exp);
@@ -386,86 +387,108 @@ void ExperDemoSystem::moveStage() {
 
     std::cout << "TrackingThread has been invoked" << std::endl;
 
-	// ÔÚÑ­»·Íâ³õÊ¼»¯Ò»¸öÁ¬ĞøÊ§°Ü¼ÆÊıÆ÷
+	// åœ¨å¾ªç¯å¤–åˆå§‹åŒ–ä¸€ä¸ªè¿ç»­å¤±è´¥è®¡æ•°å™¨
 	int consecutive_failures = 0;
 
-	// --- ĞÂµÄ¹Ì¶¨ÖÜÆÚÆµÂÊ¿ØÖÆÂß¼­ ---
-	// Ä¿±êÖÜÆÚ£º80ºÁÃë (10Hz)
+	// --- æ–°çš„å›ºå®šå‘¨æœŸé¢‘ç‡æ§åˆ¶é€»è¾‘ ---
+	// ç›®æ ‡å‘¨æœŸï¼š80æ¯«ç§’ (10Hz)
 	const auto loop_interval = std::chrono::milliseconds(80);
 
 	while (m_stage_running) {
-		// 1. ¼ÇÂ¼Ñ­»·¿ªÊ¼µÄÊ±¿Ì
+		// 1. è®°å½•å¾ªç¯å¼€å§‹çš„æ—¶åˆ»
 		auto loop_start_time = std::chrono::steady_clock::now();
 
-		// 2. Ö´ĞĞºËĞÄ¸ú×ÙÈÎÎñ
-		// HandleStageTracker ÏÖÔÚ»áÄÚ²¿µÈ´ıÉÏÒ»´ÎÒÆ¶¯Íê³É£¬È»ºó²ÅÖ´ĞĞĞÂµÄÒÆ¶¯
+		// 2. æ‰§è¡Œæ ¸å¿ƒè·Ÿè¸ªä»»åŠ¡
+		// HandleStageTracker ç°åœ¨ä¼šå†…éƒ¨ç­‰å¾…ä¸Šä¸€æ¬¡ç§»åŠ¨å®Œæˆï¼Œç„¶åæ‰æ‰§è¡Œæ–°çš„ç§»åŠ¨
         int tracker_status = HandleStageTracker(exp);
 
-// 		// ¼ì²éÈÎÎñÊÇ·ñ³É¹¦
+// 		// æ£€æŸ¥ä»»åŠ¡æ˜¯å¦æˆåŠŸ
 // 		if (tracker_status == 0) {
-// 			// Èç¹û³É¹¦ÁË£¬ÇåÁãÊ§°Ü¼ÆÊıÆ÷
+// 			// å¦‚æœæˆåŠŸäº†ï¼Œæ¸…é›¶å¤±è´¥è®¡æ•°å™¨
 // 			if (consecutive_failures > 0) {
 // 				std::cout << "[Info] Stage communication has recovered." << std::endl;
 // 			}
 // 			consecutive_failures = 0;
 // 		}
 // 		else {
-// 			// Èç¹ûÈÎÎñÊ§°Ü£¬Ôö¼ÓÊ§°Ü¼ÆÊı
+// 			// å¦‚æœä»»åŠ¡å¤±è´¥ï¼Œå¢åŠ å¤±è´¥è®¡æ•°
 // 			consecutive_failures++;
 // 			std::cout << "[Warning] Tracking task failed. Attempt "
 // 				<< consecutive_failures << "/" << 50
 // 				<< "." << std::endl;
 // 
-// 			// ¼ì²éÁ¬ĞøÊ§°Ü´ÎÊıÊÇ·ñ³¬¹ıãĞÖµ
+// 			// æ£€æŸ¥è¿ç»­å¤±è´¥æ¬¡æ•°æ˜¯å¦è¶…è¿‡é˜ˆå€¼
 // 			if (consecutive_failures >= 50) {
 // 				std::cout << "[FATAL ERROR] Exceeded max retry attempts. Stopping Stage Thread." << std::endl;
-// 				m_stage_running = false; // ±ê¼ÇÎªÍ£Ö¹
-// 				break;                   // Á¢¼´Ìø³öÑ­»·
+// 				m_stage_running = false; // æ ‡è®°ä¸ºåœæ­¢
+// 				break;                   // ç«‹å³è·³å‡ºå¾ªç¯
 // 			}
 // 		}
 
-		// ¼ÆËãÏß³æÔË¶¯ËÙ¶È
-		// ×¢Òâ£ºÕâÀïµÄdelay²ÎÊıÏÖÔÚ¿ÉÒÔ´«µİ80£¬±íÊ¾ÎÒÃÇÆÚÍûµÄÖÜÆÚ
+		// è®¡ç®—çº¿è™«è¿åŠ¨é€Ÿåº¦
+		// æ³¨æ„ï¼šè¿™é‡Œçš„delayå‚æ•°ç°åœ¨å¯ä»¥ä¼ é€’80ï¼Œè¡¨ç¤ºæˆ‘ä»¬æœŸæœ›çš„å‘¨æœŸ
 		curVelocity = NematodeDisplace(exp, 80, totalDistance);
 
-		// 3. ¼ÆËã´ÓÑ­»·¿ªÊ¼µ½ÏÖÔÚ£¬ËùÓĞÈÎÎñ»¨·ÑµÄ×ÜÊ±¼ä
+		// 3. è®¡ç®—ä»å¾ªç¯å¼€å§‹åˆ°ç°åœ¨ï¼Œæ‰€æœ‰ä»»åŠ¡èŠ±è´¹çš„æ€»æ—¶é—´
 		auto loop_end_time = std::chrono::steady_clock::now();
 		auto task_duration = std::chrono::duration_cast<std::chrono::milliseconds>(loop_end_time - loop_start_time);
 
-		// 4. ¼ÆËãÎªÁË´Õ¹»100ms£¬»¹ĞèÒªË¯Ãß¶à¾Ã
+		// 4. è®¡ç®—ä¸ºäº†å‡‘å¤Ÿ100msï¼Œè¿˜éœ€è¦ç¡çœ å¤šä¹…
 		auto sleep_duration = loop_interval - task_duration;
 
-		// 5. Ö´ĞĞË¯Ãß
+		// 5. æ‰§è¡Œç¡çœ 
 		if (sleep_duration > std::chrono::milliseconds(0)) {
-			// Èç¹ûÈÎÎñÖ´ĞĞµÃ¿ì£¬¾ÍË¯ÃßÊ£ÏÂµÄÊ±¼ä
+			// å¦‚æœä»»åŠ¡æ‰§è¡Œå¾—å¿«ï¼Œå°±ç¡çœ å‰©ä¸‹çš„æ—¶é—´
 			std::this_thread::sleep_for(sleep_duration);
 		}
 		else {
-			// Èç¹ûÈÎÎñÖ´ĞĞÊ±¼äÒÑ¾­³¬¹ı»òµÈÓÚ100ms£¬¾Í²»ÔÙË¯Ãß£¬Á¢¼´¿ªÊ¼ÏÂÒ»´Î¸ú×Ù
-			// ÕâÈ·±£ÁËÏµÍ³²»»áÒò³¤Ê±¼äµÄµÈ´ı¶ø¶ªÊ§½ÚÅÄ
+			// å¦‚æœä»»åŠ¡æ‰§è¡Œæ—¶é—´å·²ç»è¶…è¿‡æˆ–ç­‰äº100msï¼Œå°±ä¸å†ç¡çœ ï¼Œç«‹å³å¼€å§‹ä¸‹ä¸€æ¬¡è·Ÿè¸ª
+			// è¿™ç¡®ä¿äº†ç³»ç»Ÿä¸ä¼šå› é•¿æ—¶é—´çš„ç­‰å¾…è€Œä¸¢å¤±èŠ‚æ‹
 			std::cout << "[Warning] Tracking loop overshot target interval. Actual time: "
 				<< task_duration.count() << "ms" << std::endl;
 		}
-		// Ô­ÓĞµÄ k++, EverySoOften(), cvWaitKey(delay) ¶¼±»´ËÂß¼­Ìæ´ú
+		// åŸæœ‰çš„ k++, EverySoOften(), cvWaitKey(delay) éƒ½è¢«æ­¤é€»è¾‘æ›¿ä»£
 	}
 
-    //¹Ø±ÕÎ»ÒÆÌ¨
+    //å…³é—­ä½ç§»å°
     UnInitialize_Stage(*(exp->MyStage));
     T2Stage_TurnOff(&(exp->MyStage));
 }
 
-//Ïß³Ì3£ºÓÃÓÚ¼ÇÂ¼Ïß³æÊı¾İ
+//çº¿ç¨‹3ï¼šç”¨äºè®°å½•çº¿è™«æ•°æ®
 void ExperDemoSystem::recordData() {
     while (m_record_running) {
-        //Ã¿ÃëÖÓ¼ÇÂ¼25´Î£¬´Ë¼ÇÂ¼²»ÊÜÏà»úÅÄÉãËÙÂÊµÄÓ°Ïì
+        auto start = std::chrono::high_resolution_clock::now();
+
+        //æ¯éš”40msè®°å½•ä¸€æ¬¡ç›¸æœºæ•°æ®ï¼Œè®°å½•è€—æ—¶2~3msï¼Œå¯èƒ½å­˜åœ¨çº¿ç¨‹é˜»å¡é—®é¢˜
         DoWriteToDisk(exp, static_cast<int>(nematodePosition_x));
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(40));
+        auto end = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+
+        if (duration.count() > 1000)
+        {//è¶…è¿‡1sä¼šæŠ¥è­¦ï¼Œå¹¶æ‰“å°è¾“å‡º
+            std::cout << "[WARNING] DoWriteToDisk took " 
+                << duraton.count() << " ms" << std::endl;
+        }
+
+        auto remaining_wait = std::chrono::milliseconds(40) - duration;
+        if (remaining_wait > std::chrono::milliseconds(0))
+        {//å¦‚æœåœ¨40mså†…ï¼Œå¯ä»¥é€‰æ‹©æ‰“å°ä¿¡æ¯
+            std::cout << "Frame #" << exp->Neuron->frameNum << " take " 
+                << duration.count() << " ms" << std::endl;
+            std::this_thread::sleep_for(std::chrono::milliseconds(40));
+        }
+        else
+        {//è®°å½•æ—¶é—´è¶…è¿‡40msä¼šç›´æ¥æ‰“å°ä¿¡æ¯
+            std::cout << "[INFO] DoWriteToDisk exceeded 40ms cycle time by "
+				<< -remaining_wait.count() << " ms" << std::endl;
+        }
     }
 }
 
-/********************   ¿Ø¼ş²¿·Ö  *********************/
-/* Í¼ÏñÏÔÊ¾²ÎÊı¿Ø¼ş */
+/********************   æ§ä»¶éƒ¨åˆ†  *********************/
+/* å›¾åƒæ˜¾ç¤ºå‚æ•°æ§ä»¶ */
 void ExperDemoSystem::on_ExpBegin_clicked() {
 
     if (!Gui_Debug) {
@@ -475,7 +498,7 @@ void ExperDemoSystem::on_ExpBegin_clicked() {
         }
     }
 
-    //°´Å¥ÑùÊ½¸Ä±ä
+    //æŒ‰é’®æ ·å¼æ”¹å˜
     if (ui.ExpBegin->text() == "Begin Experiment") {
         ui.ExpBegin->setText("End Experiment");
         ui.ExpBegin->setStyleSheet("background-color: #dc0e0e;");
@@ -483,7 +506,7 @@ void ExperDemoSystem::on_ExpBegin_clicked() {
         ui.Track->setStyleSheet("background-color: rgb(85, 170, 0);");
         ui.SaveData->setStyleSheet("background-color: rgb(85, 170, 0);");
 
-        exp->Params->OnOff = 1;  //ÊµÑé¿ªÊ¼£¬¿ªÊ¼´¦ÀíÊı¾İ
+        exp->Params->OnOff = 1;  //å®éªŒå¼€å§‹ï¼Œå¼€å§‹å¤„ç†æ•°æ®
     }
     else {
         ui.ExpBegin->setText("Begin Experiment");
@@ -498,12 +521,12 @@ void ExperDemoSystem::on_ExpBegin_clicked() {
         if (ui.SaveData->text() == "Saving ...")
             ui.SaveData->setText("Save");
 
-        //Í£Ö¹ÊµÑé¼ÇÂ¼
+        //åœæ­¢å®éªŒè®°å½•
         FinishRecording(exp);
 
-        if (exp->Params->stageTrackingOn)//Èç¹ûÎ»ÒÆÌ¨»¹ÔÚ¸ú×Ù ÏÈÍ£Ö¹¸ú×Ù
+        if (exp->Params->stageTrackingOn)//å¦‚æœä½ç§»å°è¿˜åœ¨è·Ÿè¸ª å…ˆåœæ­¢è·Ÿè¸ª
             Toggle(&(exp->Params->stageTrackingOn));
-        exp->Params->OnOff = 0;   //ÊµÑé½áÊø£¬Í£Ö¹´¦ÀíÊı¾İ
+        exp->Params->OnOff = 0;   //å®éªŒç»“æŸï¼Œåœæ­¢å¤„ç†æ•°æ®
     }
 }
 
@@ -546,7 +569,7 @@ void ExperDemoSystem::m_BinThreshBox_valueChanged() {
 }
 
 void ExperDemoSystem::m_ErodesThresh_valueChanged() {
-    //ÔİÊ±Î´Ìí¼Ó¸Ã²ÎÊı
+    //æš‚æ—¶æœªæ·»åŠ è¯¥å‚æ•°
     int value = ui.ErodesThresh->value();
     ui.ErodesSlider->setValue(value);
 }
@@ -569,27 +592,27 @@ void ExperDemoSystem::on_RectRbt_clicked() {
     exp->Params->MaskStyle = ui.RectRbt->isChecked() ? 1 : 0;
 }
 
-/* Î»ÒÆÌ¨²ÎÊı¿Ø¼ş */
+/* ä½ç§»å°å‚æ•°æ§ä»¶ */
 void FindeStagePos(Experiment* exp) {
-    //Ã¿´Î°´Å¥ÒÆ¶¯Î»ÒÆÌ¨µÄÊ±ºò£¬¸üĞÂNeuronÀïµÄ×ø±êÎ»ÖÃ
+    //æ¯æ¬¡æŒ‰é’®ç§»åŠ¨ä½ç§»å°çš„æ—¶å€™ï¼Œæ›´æ–°Neuroné‡Œçš„åæ ‡ä½ç½®
     if (FindStagePosition(*(exp->MyStage))) {
         exp->Neuron->stagePosition_x = exp->MyStage->AxisPos_x[0];
         exp->Neuron->stagePosition_y = exp->MyStage->AxisPos_y[0];
-        exp->MyCamera->resetMaxAndMin = true;  //ÖØĞÂÉè¶¨»­ÖÊ¶Ô±È¶È
+        exp->MyCamera->resetMaxAndMin = true;  //é‡æ–°è®¾å®šç”»è´¨å¯¹æ¯”åº¦
     }
 }
 
 void ExperDemoSystem::on_Up_clicked() {
     //std::cout << "Up" << std::endl;
 
-    if (exp->MyStage == NULL) return; //Èç¹ûÎ»ÒÆÌ¨Îª¿Õ£¬²»½ÓÊÕÖ¸Áî
-    if (!exp->MyStage->stageIsPresent) return; //Èç¹ûÎ»ÒÆÌ¨»¹Ã»ÓĞ×¼±¸ºÃ£¬²»½ÓÊÕÖ¸Áî
+    if (exp->MyStage == NULL) return; //å¦‚æœä½ç§»å°ä¸ºç©ºï¼Œä¸æ¥æ”¶æŒ‡ä»¤
+    if (!exp->MyStage->stageIsPresent) return; //å¦‚æœä½ç§»å°è¿˜æ²¡æœ‰å‡†å¤‡å¥½ï¼Œä¸æ¥æ”¶æŒ‡ä»¤
 
-	// È·±£³ÌĞòµÄÔË¶¯Âß¼­ÊÇ»ùÓÚ·ÇËø¶¨×´Ì¬Ö´ĞĞµÄ¡£
+	// ç¡®ä¿ç¨‹åºçš„è¿åŠ¨é€»è¾‘æ˜¯åŸºäºéé”å®šçŠ¶æ€æ‰§è¡Œçš„ã€‚
 	if (exp->Params) {
 		exp->Params->AxisLockState = 0;
 	}
-    // Õâ»áÈÃÓÃ»§½çÃæÍ¬²½·´Ó³³öµ±Ç°ÒÑ¾­ÊÇ×ÔÓÉÒÆ¶¯×´Ì¬¡£
+    // è¿™ä¼šè®©ç”¨æˆ·ç•Œé¢åŒæ­¥åæ˜ å‡ºå½“å‰å·²ç»æ˜¯è‡ªç”±ç§»åŠ¨çŠ¶æ€ã€‚
     ui.radioAxisFree->setChecked(true);
 
     MoveRelative(exp->MyStage->handle, (float)(0 - moveStep), AXIS_Y);
@@ -656,7 +679,7 @@ void ExperDemoSystem::m_StageSpeed_valueChanged() {
 
 void ExperDemoSystem::on_axisRadioButton_toggled(bool checked)
 {
-	// Ö»ÔÚ°´Å¥±»¡°Ñ¡ÖĞ¡±Ê±Ö´ĞĞÂß¼­ (checked == true)
+	// åªåœ¨æŒ‰é’®è¢«â€œé€‰ä¸­â€æ—¶æ‰§è¡Œé€»è¾‘ (checked == true)
 	if (!checked) {
 		return;
 	}
@@ -664,10 +687,10 @@ void ExperDemoSystem::on_axisRadioButton_toggled(bool checked)
 	if (exp == NULL || exp->Params == NULL) return;
     if (!exp->MyStage->stageIsPresent) return;
 
-	// »ñÈ¡·¢ËÍĞÅºÅµÄÄÇ¸ö°´Å¥
+	// è·å–å‘é€ä¿¡å·çš„é‚£ä¸ªæŒ‰é’®
 	QObject* buttonObj = sender();
 
-	// ÅĞ¶ÏÊÇÄÄ¸ö°´Å¥£¬È»ºó¸üĞÂ×´Ì¬Öµ
+	// åˆ¤æ–­æ˜¯å“ªä¸ªæŒ‰é’®ï¼Œç„¶åæ›´æ–°çŠ¶æ€å€¼
 	if (buttonObj == ui.radioAxisFree) {
 		exp->Params->AxisLockState = 0;
 	}
@@ -703,21 +726,21 @@ void ExperDemoSystem::on_Track_clicked() {
     auto button = ui.Track;
     
     if (ui.ExpBegin->text() == "End Experiment") {
-        //Èç¹ûÃ»ÓĞ¿ªÊ¼ÊµÑé£¬¸Ã°´Å¥ÊÇ²»Æğ×÷ÓÃµÄ
+        //å¦‚æœæ²¡æœ‰å¼€å§‹å®éªŒï¼Œè¯¥æŒ‰é’®æ˜¯ä¸èµ·ä½œç”¨çš„
         if (button->text() == "Start Track") {
             button->setText("End Track");
 
-            //¿ªÊ¼¸ú×Ù
+            //å¼€å§‹è·Ÿè¸ª
             if (exp->Params->stageTrackingOn != 1) {
                 Toggle(&(exp->Params->stageTrackingOn));
             }
 
-            button->setStyleSheet("background-color: #dc0e0e;");//ºìÉ«
+            button->setStyleSheet("background-color: #dc0e0e;");//çº¢è‰²
         }
         else {
             button->setText("Start Track");
 
-            //Í£Ö¹¸ú×Ù
+            //åœæ­¢è·Ÿè¸ª
             if (exp->Params->stageTrackingOn != 0) {
                 Toggle(&(exp->Params->stageTrackingOn));
             }
@@ -748,13 +771,13 @@ void ExperDemoSystem::m_AccSet_valueChanged() {
     AcDecSet(exp->MyStage->handle, acc, AXIS_Y);
 }
 
-/* ¹âµç¿ØÖÆÄ£¿é¿Ø¼ş */
+/* å…‰ç”µæ§åˆ¶æ¨¡å—æ§ä»¶ */
 void ExperDemoSystem::on_LedSlider_valueChanged(int value) {
     ui.LedSpinBox->setValue(value);
     exp->Params->BrightnessPerc = value;
     //std::cout << "exp->Params->BrightnessPerc: " << exp->Params->BrightnessPerc << std::endl;
 
-    //ÏòLED¿ØÖÆÆ÷Ğ´ÈëÊı¾İ
+    //å‘LEDæ§åˆ¶å™¨å†™å…¥æ•°æ®
     if (exp->MyLed == NULL) return;
     TLDC_TurnLedOnOff(*(exp->MyLed), LED0, exp->Params->Led0_status, exp->Params->BrightnessPerc);
 }
@@ -785,18 +808,18 @@ void ExperDemoSystem::on_LedOnOff_clicked() {
 
     if (exp->MyLed == NULL) return;
     
-    //µ÷½ÚLed¿ØÖÆÆ÷µÆ¹â
+    //è°ƒèŠ‚Ledæ§åˆ¶å™¨ç¯å…‰
     //std::cout << "exp->Params->BrightnessPerc: " << exp->Params->BrightnessPerc << std::endl;
     TLDC_TurnLedOnOff(*(exp->MyLed), LED0, exp->Params->Led0_status, exp->Params->BrightnessPerc);
 }
 
 
-/* µç³¡´Ì¼¤Ä£¿é¿Ø¼ş */
+/* ç”µåœºåˆºæ¿€æ¨¡å—æ§ä»¶ */
 void ExperDemoSystem::on_voltageSlider_valueChanged(int value)
 {
 	ui.voltageBox->setValue(value);
-//     exp->Params->vDir = value < 0 ? '1' : '0';     //Èç¹ûÊıÖµÎª¸ºÊı£¬·½ÏòÎª1£¬ÊıÖµÎªÕıÊı£¬·½ÏòÎª0     //×¢ÊÍµô£¬½öÓÃÀ´±£Ö¤UI½çÃæÍ¬²½£¬²»¸Ä±äParamsÖµÒÔ±£Ö¤¼ÇÂ¼Ä£¿é¼ÇÂ¼µÄÊÇÕæÊµµç³¡
-// 	int vol = abs(value);    //È¥¾ø¶ÔÖµ
+//     exp->Params->vDir = value < 0 ? '1' : '0';     //å¦‚æœæ•°å€¼ä¸ºè´Ÿæ•°ï¼Œæ–¹å‘ä¸º1ï¼Œæ•°å€¼ä¸ºæ­£æ•°ï¼Œæ–¹å‘ä¸º0     //æ³¨é‡Šæ‰ï¼Œä»…ç”¨æ¥ä¿è¯UIç•Œé¢åŒæ­¥ï¼Œä¸æ”¹å˜Paramså€¼ä»¥ä¿è¯è®°å½•æ¨¡å—è®°å½•çš„æ˜¯çœŸå®ç”µåœº
+// 	int vol = abs(value);    //å»ç»å¯¹å€¼
 // 	if (vol < 10)
 //         exp->Params->vNum = vol + '0';
 // 	else
@@ -811,9 +834,9 @@ void ExperDemoSystem::on_voltageBox_valueChanged()
     int value = ui.voltageBox->value();
     ui.voltageSlider->setValue(value);
     
-//     // ¸üĞÂ vDir ºÍ vNum µÄÖµ
-//     exp->Params->vDir = value < 0 ? '1' : '0';     //Èç¹ûÊıÖµÎª¸ºÊı£¬·½ÏòÎª1£¬ÊıÖµÎªÕıÊı£¬·½ÏòÎª0
-//     int vol = abs(value);    //È¥¾ø¶ÔÖµ
+//     // æ›´æ–° vDir å’Œ vNum çš„å€¼
+//     exp->Params->vDir = value < 0 ? '1' : '0';     //å¦‚æœæ•°å€¼ä¸ºè´Ÿæ•°ï¼Œæ–¹å‘ä¸º1ï¼Œæ•°å€¼ä¸ºæ­£æ•°ï¼Œæ–¹å‘ä¸º0
+//     int vol = abs(value);    //å»ç»å¯¹å€¼
 //     if (vol < 10)
 //         exp->Params->vNum = vol + '0';
 //     else
@@ -826,18 +849,18 @@ void ExperDemoSystem::on_voltageBox_valueChanged()
 void ExperDemoSystem::on_waveformBox_currentIndexChanged(int)
 {
 //     int index = ui.waveformBox->currentIndex();
-//     exp->Params->vWave = index + '0';  // ½«Ë÷ÒıÖµ×ª»»Îª×Ö·û
+//     exp->Params->vWave = index + '0';  // å°†ç´¢å¼•å€¼è½¬æ¢ä¸ºå­—ç¬¦
 //     std::cout << "exp->Params->vWave: " << exp->Params->vWave << std::endl;
 }
 
 void ExperDemoSystem::on_Electric1_Stop_clicked() {
-	// ÉèÖÃËùÓĞ°´Å¥µÄ±³¾°É«Îª°×É«
+	// è®¾ç½®æ‰€æœ‰æŒ‰é’®çš„èƒŒæ™¯è‰²ä¸ºç™½è‰²
 	ui.Ins2_right->setStyleSheet("background-color: rgb(255, 255, 255);");
 	ui.Ins2_down->setStyleSheet("background-color: rgb(255, 255, 255);");
 	ui.Ins2_up->setStyleSheet("background-color: rgb(255, 255, 255);");
 	ui.Ins2_left->setStyleSheet("background-color: rgb(255, 255, 255);");
 
-	// ²»Ñ¡È¡Í¨µÀ
+	// ä¸é€‰å–é€šé“
 	exp->Params->EF_Mode = 0;
 	std::cout << "exp->Params->EF_Mode: " << exp->Params->EF_Mode << std::endl;
 	if (ui.LedOnOff->text() == "OFF")
@@ -845,16 +868,16 @@ void ExperDemoSystem::on_Electric1_Stop_clicked() {
 
     exp->Params->vChannel = '0';
 
-	// ¡¾ĞÂÔö¡¿: Ã÷È·ÉèÖÃËùÓĞµç³¡²ÎÊıÎª¡°Í£Ö¹¡±×´Ì¬£¬ÒÔ±£Ö¤¼ÇÂ¼µÄ×¼È·ĞÔ
+	// ã€æ–°å¢ã€‘: æ˜ç¡®è®¾ç½®æ‰€æœ‰ç”µåœºå‚æ•°ä¸ºâ€œåœæ­¢â€çŠ¶æ€ï¼Œä»¥ä¿è¯è®°å½•çš„å‡†ç¡®æ€§
 	exp->Params->vChannel = '0';
 	exp->Params->vWave = '0';
 	exp->Params->vDir = '0';
 	exp->Params->vNum = '0';
 
-	// ·¢ËÍ¸üĞÂµÄ EF_Mode Öµ
+	// å‘é€æ›´æ–°çš„ EF_Mode å€¼
 	exp->sender->changeMessage(exp->Params->vChannel, exp->Params->vDir, exp->Params->vNum, exp->Params->vWave);
 
-    //½â³ıÎ»ÒÆÌ¨Ëø¶¨×´Ì¬
+    //è§£é™¤ä½ç§»å°é”å®šçŠ¶æ€
 	if (exp->Params) {
 		exp->Params->AxisLockState = 0;
 	}
@@ -863,24 +886,24 @@ void ExperDemoSystem::on_Electric1_Stop_clicked() {
 }
 
 void ExperDemoSystem::on_Electric1_Right_clicked() {
-	// ÉèÖÃ Ins2_right µÄ±³¾°É«ÎªÂÌÉ«£¬ÉèÖÃÆäËû°´Å¥µÄ±³¾°É«Îª°×É«
+	// è®¾ç½® Ins2_right çš„èƒŒæ™¯è‰²ä¸ºç»¿è‰²ï¼Œè®¾ç½®å…¶ä»–æŒ‰é’®çš„èƒŒæ™¯è‰²ä¸ºç™½è‰²
 	ui.Ins2_right->setStyleSheet("background-color: rgb(85, 255, 127);");
 	ui.Ins2_down->setStyleSheet("background-color: rgb(255, 255, 255);");
 	ui.Ins2_up->setStyleSheet("background-color: rgb(255, 255, 255);");
 	ui.Ins2_left->setStyleSheet("background-color: rgb(255, 255, 255);");
 
-	// Ñ¡È¡12Í¨µÀ
+	// é€‰å–12é€šé“
 	exp->Params->EF_Mode = 1;
 	std::cout << "exp->Params->EF_Mode: " << exp->Params->EF_Mode << std::endl;
 	if (ui.LedOnOff->text() == "OFF")
 		emit ui.LedOnOff->clicked();
 
 
-	// ¡¾ĞÂÔö¡¿: ÔÚ´Ë´¦´ÓUI¶ÁÈ¡×îĞÂ²ÎÊı²¢¸üĞÂexp->Params
+	// ã€æ–°å¢ã€‘: åœ¨æ­¤å¤„ä»UIè¯»å–æœ€æ–°å‚æ•°å¹¶æ›´æ–°exp->Params
 	int value = ui.voltageBox->value();
 	int index = ui.waveformBox->currentIndex();
 
-	exp->Params->vChannel = '1'; // ´Ë°´Å¥ÉèÖÃÍ¨µÀÎª'1'
+	exp->Params->vChannel = '1'; // æ­¤æŒ‰é’®è®¾ç½®é€šé“ä¸º'1'
 	exp->Params->vWave = index + '0';
 	exp->Params->vDir = value < 0 ? '1' : '0';
 	int vol = abs(value);
@@ -893,7 +916,7 @@ void ExperDemoSystem::on_Electric1_Right_clicked() {
 	}
 
 
-	// ·¢ËÍ¸üĞÂµÄ EF_Mode Öµ
+	// å‘é€æ›´æ–°çš„ EF_Mode å€¼
     exp->sender->changeMessage(exp->Params->vChannel, exp->Params->vDir, exp->Params->vNum, exp->Params->vWave);
 
 	if (exp->Params) {
@@ -904,24 +927,24 @@ void ExperDemoSystem::on_Electric1_Right_clicked() {
 }
 
 void ExperDemoSystem::on_Electric1_Down_clicked() {
-	// ÉèÖÃ Ins2_down µÄ±³¾°É«ÎªÂÌÉ«£¬ÉèÖÃÆäËû°´Å¥µÄ±³¾°É«Îª°×É«
+	// è®¾ç½® Ins2_down çš„èƒŒæ™¯è‰²ä¸ºç»¿è‰²ï¼Œè®¾ç½®å…¶ä»–æŒ‰é’®çš„èƒŒæ™¯è‰²ä¸ºç™½è‰²
 	ui.Ins2_right->setStyleSheet("background-color: rgb(255, 255, 255);");
 	ui.Ins2_down->setStyleSheet("background-color: rgb(85, 255, 127);");
 	ui.Ins2_up->setStyleSheet("background-color: rgb(255, 255, 255);");
 	ui.Ins2_left->setStyleSheet("background-color: rgb(255, 255, 255);");
 
-	// Ñ¡È¡23Í¨µÀ
+	// é€‰å–23é€šé“
 	exp->Params->EF_Mode = 2;
 	std::cout << "exp->Params->EF_Mode: " << exp->Params->EF_Mode << std::endl;
 	if (ui.LedOnOff->text() == "OFF")
 		emit ui.LedOnOff->clicked();
 
 
-	// ¡¾ĞÂÔö¡¿: ÔÚ´Ë´¦´ÓUI¶ÁÈ¡×îĞÂ²ÎÊı²¢¸üĞÂexp->Params
+	// ã€æ–°å¢ã€‘: åœ¨æ­¤å¤„ä»UIè¯»å–æœ€æ–°å‚æ•°å¹¶æ›´æ–°exp->Params
 	int value = ui.voltageBox->value();
 	int index = ui.waveformBox->currentIndex();
 
-	exp->Params->vChannel = '2'; // ´Ë°´Å¥ÉèÖÃÍ¨µÀÎª'2'
+	exp->Params->vChannel = '2'; // æ­¤æŒ‰é’®è®¾ç½®é€šé“ä¸º'2'
 	exp->Params->vWave = index + '0';
 	exp->Params->vDir = value < 0 ? '1' : '0';
 	int vol = abs(value);
@@ -934,7 +957,7 @@ void ExperDemoSystem::on_Electric1_Down_clicked() {
 	}
 
 
-	// ·¢ËÍ¸üĞÂµÄ EF_Mode Öµ
+	// å‘é€æ›´æ–°çš„ EF_Mode å€¼
     exp->sender->changeMessage(exp->Params->vChannel, exp->Params->vDir, exp->Params->vNum, exp->Params->vWave);
 
 	if (exp->Params) {
@@ -945,24 +968,24 @@ void ExperDemoSystem::on_Electric1_Down_clicked() {
 }
 
 void ExperDemoSystem::on_Electric1_Left_clicked() {
-	// ÉèÖÃ Ins2_left µÄ±³¾°É«ÎªÂÌÉ«£¬ÉèÖÃÆäËû°´Å¥µÄ±³¾°É«Îª°×É«
+	// è®¾ç½® Ins2_left çš„èƒŒæ™¯è‰²ä¸ºç»¿è‰²ï¼Œè®¾ç½®å…¶ä»–æŒ‰é’®çš„èƒŒæ™¯è‰²ä¸ºç™½è‰²
 	ui.Ins2_right->setStyleSheet("background-color: rgb(255, 255, 255);");
 	ui.Ins2_down->setStyleSheet("background-color: rgb(255, 255, 255);");
 	ui.Ins2_up->setStyleSheet("background-color: rgb(255, 255, 255);");
 	ui.Ins2_left->setStyleSheet("background-color: rgb(85, 255, 127);");
 
-	// Ñ¡È¡34Í¨µÀ
+	// é€‰å–34é€šé“
 	exp->Params->EF_Mode = 3;
 	std::cout << "exp->Params->EF_Mode: " << exp->Params->EF_Mode << std::endl;
 	if (ui.LedOnOff->text() == "OFF")
 		emit ui.LedOnOff->clicked();
 
     
-	// ¡¾ĞÂÔö¡¿: ÔÚ´Ë´¦´ÓUI¶ÁÈ¡×îĞÂ²ÎÊı²¢¸üĞÂexp->Params
+	// ã€æ–°å¢ã€‘: åœ¨æ­¤å¤„ä»UIè¯»å–æœ€æ–°å‚æ•°å¹¶æ›´æ–°exp->Params
 	int value = ui.voltageBox->value();
 	int index = ui.waveformBox->currentIndex();
 
-	exp->Params->vChannel = '3'; // ´Ë°´Å¥ÉèÖÃÍ¨µÀÎª'3'
+	exp->Params->vChannel = '3'; // æ­¤æŒ‰é’®è®¾ç½®é€šé“ä¸º'3'
 	exp->Params->vWave = index + '0';
 	exp->Params->vDir = value < 0 ? '1' : '0';
 	int vol = abs(value);
@@ -975,7 +998,7 @@ void ExperDemoSystem::on_Electric1_Left_clicked() {
 	}
 
 
- 	// ·¢ËÍ¸üĞÂµÄ EF_Mode      
+ 	// å‘é€æ›´æ–°çš„ EF_Mode      
     exp->sender->changeMessage(exp->Params->vChannel, exp->Params->vDir, exp->Params->vNum, exp->Params->vWave);
 
 	if (exp->Params) {
@@ -987,24 +1010,24 @@ void ExperDemoSystem::on_Electric1_Left_clicked() {
 
 
 void ExperDemoSystem::on_Electric1_Up_clicked() {
-	// ÉèÖÃ Ins2_up µÄ±³¾°É«ÎªÂÌÉ«£¬ÉèÖÃÆäËû°´Å¥µÄ±³¾°É«Îª°×É«
+	// è®¾ç½® Ins2_up çš„èƒŒæ™¯è‰²ä¸ºç»¿è‰²ï¼Œè®¾ç½®å…¶ä»–æŒ‰é’®çš„èƒŒæ™¯è‰²ä¸ºç™½è‰²
 	ui.Ins2_right->setStyleSheet("background-color: rgb(255, 255, 255);");
 	ui.Ins2_down->setStyleSheet("background-color: rgb(255, 255, 255);");
 	ui.Ins2_up->setStyleSheet("background-color: rgb(85, 255, 127);");
 	ui.Ins2_left->setStyleSheet("background-color: rgb(255, 255, 255);");
 
-	// Ñ¡È¡41Í¨µÀ
+	// é€‰å–41é€šé“
 	exp->Params->EF_Mode = 4;
 	std::cout << "exp->Params->EF_Mode: " << exp->Params->EF_Mode << std::endl;
 	if (ui.LedOnOff->text() == "OFF")
 		emit ui.LedOnOff->clicked();
 
     
-	// ¡¾ĞÂÔö¡¿: ÔÚ´Ë´¦´ÓUI¶ÁÈ¡×îĞÂ²ÎÊı²¢¸üĞÂexp->Params
+	// ã€æ–°å¢ã€‘: åœ¨æ­¤å¤„ä»UIè¯»å–æœ€æ–°å‚æ•°å¹¶æ›´æ–°exp->Params
 	int value = ui.voltageBox->value();
 	int index = ui.waveformBox->currentIndex();
 
-	exp->Params->vChannel = '4'; // ´Ë°´Å¥ÉèÖÃÍ¨µÀÎª'4'
+	exp->Params->vChannel = '4'; // æ­¤æŒ‰é’®è®¾ç½®é€šé“ä¸º'4'
 	exp->Params->vWave = index + '0';
 	exp->Params->vDir = value < 0 ? '1' : '0';
 	int vol = abs(value);
@@ -1017,7 +1040,7 @@ void ExperDemoSystem::on_Electric1_Up_clicked() {
 	}
 
 
-	// ·¢ËÍ¸üĞÂµÄ EF_Mode Öµ
+	// å‘é€æ›´æ–°çš„ EF_Mode å€¼
     exp->sender->changeMessage(exp->Params->vChannel, exp->Params->vDir, exp->Params->vNum, exp->Params->vWave);
 
 	if (exp->Params) {
@@ -1028,131 +1051,131 @@ void ExperDemoSystem::on_Electric1_Up_clicked() {
 }
 
 
-// ¼ÆÊ±Æ÷UI¸üĞÂº¯Êı
+// è®¡æ—¶å™¨UIæ›´æ–°å‡½æ•°
 void ExperDemoSystem::updateTimerDisplay(){
-	// »ñÈ¡×Ôm_efElapsedTimeÉÏ´Îµ÷ÓÃstart()»òrestart()ÒÔÀ´¾­¹ıµÄºÁÃëÊı
+	// è·å–è‡ªm_efElapsedTimeä¸Šæ¬¡è°ƒç”¨start()æˆ–restart()ä»¥æ¥ç»è¿‡çš„æ¯«ç§’æ•°
 	qint64 elapsedTime = m_efElapsedTime.elapsed();
 
-	// Âß¼­ĞŞ¸Ä£ºÅĞ¶ÏÊÇ·ñ³¬¹ı 60 Ãë (60 * 1000 = 60000 ºÁÃë)
+	// é€»è¾‘ä¿®æ”¹ï¼šåˆ¤æ–­æ˜¯å¦è¶…è¿‡ 60 ç§’ (60 * 1000 = 60000 æ¯«ç§’)
 	if (elapsedTime >= 60000) {
-		// ³¬¹ı60Ãë£¬ÉèÖÃÎÄ±¾ÑÕÉ«ÎªºìÉ«£¬²¢¼Ó´Ö£¨¿ÉÑ¡£©
+		// è¶…è¿‡60ç§’ï¼Œè®¾ç½®æ–‡æœ¬é¢œè‰²ä¸ºçº¢è‰²ï¼Œå¹¶åŠ ç²—ï¼ˆå¯é€‰ï¼‰
 		ui.ef_timerLabel->setStyleSheet("color: red; font-weight: bold;");
 	}
 	else {
-		// Î´³¬¹ı60Ãë£¬»Ö¸´Ä¬ÈÏÑùÊ½£¨ÀıÈçºÚÉ«»òÏµÍ³Ä¬ÈÏÉ«£©£¬
-		// ÕâÒ»²½ºÜÖØÒª£¬·ÀÖ¹¼ÆÊ±Æ÷ÖØÖÃºóÈÔÈ»ÊÇºìÉ«
+		// æœªè¶…è¿‡60ç§’ï¼Œæ¢å¤é»˜è®¤æ ·å¼ï¼ˆä¾‹å¦‚é»‘è‰²æˆ–ç³»ç»Ÿé»˜è®¤è‰²ï¼‰ï¼Œ
+		// è¿™ä¸€æ­¥å¾ˆé‡è¦ï¼Œé˜²æ­¢è®¡æ—¶å™¨é‡ç½®åä»ç„¶æ˜¯çº¢è‰²
 		ui.ef_timerLabel->setStyleSheet("");
-		// Èç¹ûÄãµÄ½çÃæ±³¾°ÊÇÉîÉ«£¬Ä¬ÈÏ×ÖÌåÊÇ°×É«£¬ÕâÀï¿ÉÒÔÓÃ "color: white;" »ò "color: black;" Ã÷È·Ö¸¶¨
+		// å¦‚æœä½ çš„ç•Œé¢èƒŒæ™¯æ˜¯æ·±è‰²ï¼Œé»˜è®¤å­—ä½“æ˜¯ç™½è‰²ï¼Œè¿™é‡Œå¯ä»¥ç”¨ "color: white;" æˆ– "color: black;" æ˜ç¡®æŒ‡å®š
 	}
 
-	// ½«ºÁÃëÊı¸ñÊ½»¯Îª MM:ss.z (·ÖÖÓ:Ãë.Ê®·ÖÖ®Ò»Ãë) µÄ¸ñÊ½
+	// å°†æ¯«ç§’æ•°æ ¼å¼åŒ–ä¸º MM:ss.z (åˆ†é’Ÿ:ç§’.ååˆ†ä¹‹ä¸€ç§’) çš„æ ¼å¼
 	QString formattedTime = QTime::fromMSecsSinceStartOfDay(elapsedTime).toString("mm:ss.z");
 
-	// ÔÚUIÉÏÎÒÃÇ´´½¨µÄÄÇ¸öQLabel¿Ø¼şÉÏ¸üĞÂÎÄ±¾
+	// åœ¨UIä¸Šæˆ‘ä»¬åˆ›å»ºçš„é‚£ä¸ªQLabelæ§ä»¶ä¸Šæ›´æ–°æ–‡æœ¬
 	ui.ef_timerLabel->setText(formattedTime);
 }
 
-    /* Ô¶³ÌÁ¬½ÓÄ£¿é */
-//ÔÚ¸ÃÄ£¿éÏÂ´´½¨Ëæ»ú´Ì¼¤¡¢Ç¿»¯Ñ§Ï°ºó´Ì¼¤×é¼ş
+    /* è¿œç¨‹è¿æ¥æ¨¡å— */
+//åœ¨è¯¥æ¨¡å—ä¸‹åˆ›å»ºéšæœºåˆºæ¿€ã€å¼ºåŒ–å­¦ä¹ ååˆºæ¿€ç»„ä»¶
 /**
- * @brief µ±¡°Ëæ»ú´Ì¼¤¡±°´Å¥±»µã»÷Ê±´¥·¢µÄ²Ûº¯Êı¡£
- * * ¸Ãº¯Êı»á¸ù¾İÔ¤ÉèµÄ²ÎÊı¿Õ¼ä£¬Ëæ»úÑ¡ÔñÒ»ÖÖ²¨ĞÎºÍÒ»ÖÖµçÑ¹µÈ¼¶£¬
- * ²¢½«ÕâĞ©ÖµÉèÖÃµ½ÓÃ»§½çÃæ(UI)µÄÏàÓ¦¿Ø¼şÉÏ¡£
- * * ×¢Òâ£º´Ëº¯ÊıÖ»¸üĞÂUIÏÔÊ¾£¬²»»áÊµ¼Ê·¢ËÍUDPÖ¸ÁîÀ´Ê©¼Óµç³¡¡£
+ * @brief å½“â€œéšæœºåˆºæ¿€â€æŒ‰é’®è¢«ç‚¹å‡»æ—¶è§¦å‘çš„æ§½å‡½æ•°ã€‚
+ * * è¯¥å‡½æ•°ä¼šæ ¹æ®é¢„è®¾çš„å‚æ•°ç©ºé—´ï¼Œéšæœºé€‰æ‹©ä¸€ç§æ³¢å½¢å’Œä¸€ç§ç”µå‹ç­‰çº§ï¼Œ
+ * å¹¶å°†è¿™äº›å€¼è®¾ç½®åˆ°ç”¨æˆ·ç•Œé¢(UI)çš„ç›¸åº”æ§ä»¶ä¸Šã€‚
+ * * æ³¨æ„ï¼šæ­¤å‡½æ•°åªæ›´æ–°UIæ˜¾ç¤ºï¼Œä¸ä¼šå®é™…å‘é€UDPæŒ‡ä»¤æ¥æ–½åŠ ç”µåœºã€‚
  */
 void ExperDemoSystem::on_Random_Stimulus_clicked()
 {
-    // 1. ¶¨Òå´Ì¼¤²ÎÊı¿Õ¼ä
+    // 1. å®šä¹‰åˆºæ¿€å‚æ•°ç©ºé—´
     // =================================================================
 
-    // ¸ù¾İÎÒÃÇÖ®Ç°Éè¼ÆµÄ·½°¸£¬¶¨ÒåµçÑ¹µÈ¼¶ (µ¥Î»: V)
+    // æ ¹æ®æˆ‘ä»¬ä¹‹å‰è®¾è®¡çš„æ–¹æ¡ˆï¼Œå®šä¹‰ç”µå‹ç­‰çº§ (å•ä½: V)
     const QVector<int> voltageLevels = { 4, 8, 12 };
 
-    // ¶¨Òå²¨ĞÎµÄ×ÜÊı¡£
-    // ¼ÙÉèÄúµÄ "Waveform" ÏÂÀ­¿ò (QComboBox) ÖĞÓĞ5¸öÑ¡Ïî£¬
-    // ËüÃÇµÄË÷Òı´Ó0µ½4·Ö±ğ¶ÔÓ¦: ÕıÏÒ²¨, ·½²¨, Ö±Á÷, ¾â³İ²¨, Èı½Ç²¨¡£
+    // å®šä¹‰æ³¢å½¢çš„æ€»æ•°ã€‚
+    // å‡è®¾æ‚¨çš„ "Waveform" ä¸‹æ‹‰æ¡† (QComboBox) ä¸­æœ‰5ä¸ªé€‰é¡¹ï¼Œ
+    // å®ƒä»¬çš„ç´¢å¼•ä»0åˆ°4åˆ†åˆ«å¯¹åº”: æ­£å¼¦æ³¢, æ–¹æ³¢, ç›´æµ, é”¯é½¿æ³¢, ä¸‰è§’æ³¢ã€‚
     const int totalWaveformTypes = 3;
 
-    // 2. Éú³ÉËæ»ú²ÎÊı
+    // 2. ç”Ÿæˆéšæœºå‚æ•°
     // =================================================================
 
-    // (a) ´ÓÔ¤ÉèµÄµçÑ¹µÈ¼¶Êı×éÖĞ£¬Ëæ»úÑ¡ÔñÒ»¸öµçÑ¹Öµ
-    // QRandomGenerator::global()->bounded(N) »áÉú³ÉÒ»¸ö [0, N-1] ·¶Î§ÄÚµÄËæ»úÕûÊı
+    // (a) ä»é¢„è®¾çš„ç”µå‹ç­‰çº§æ•°ç»„ä¸­ï¼Œéšæœºé€‰æ‹©ä¸€ä¸ªç”µå‹å€¼
+    // QRandomGenerator::global()->bounded(N) ä¼šç”Ÿæˆä¸€ä¸ª [0, N-1] èŒƒå›´å†…çš„éšæœºæ•´æ•°
     int randomVoltageIndex = QRandomGenerator::global()->bounded(voltageLevels.size());
     int chosenVoltage = voltageLevels[randomVoltageIndex];
 
-    // (b) Ëæ»úÑ¡ÔñÒ»¸ö²¨ĞÎµÄË÷Òı
+    // (b) éšæœºé€‰æ‹©ä¸€ä¸ªæ³¢å½¢çš„ç´¢å¼•
     int chosenWaveformIndex = QRandomGenerator::global()->bounded(totalWaveformTypes) + 1;
 
-    // 3. ½«Ëæ»úÑ¡ÔñµÄ²ÎÊı¸üĞÂµ½UI¿Ø¼şÉÏ
+    // 3. å°†éšæœºé€‰æ‹©çš„å‚æ•°æ›´æ–°åˆ°UIæ§ä»¶ä¸Š
     // =================================================================
 
     if (ui.voltageSlider) {
         ui.voltageSlider->setValue(chosenVoltage);
     }
     else {
-        qWarning() << "¾¯¸æ: Î´ÕÒµ½ÃûÎª horizontalSlider_Voltage µÄµçÑ¹»¬¿é¿Ø¼ş¡£";
+        qWarning() << "è­¦å‘Š: æœªæ‰¾åˆ°åä¸º horizontalSlider_Voltage çš„ç”µå‹æ»‘å—æ§ä»¶ã€‚";
     }
 
     if (ui.waveformBox) {
         ui.waveformBox->setCurrentIndex(chosenWaveformIndex);
     }
     else {
-        qWarning() << "¾¯¸æ: Î´ÕÒµ½ÃûÎª comboBox_Waveform µÄ²¨ĞÎÏÂÀ­¿ò¿Ø¼ş¡£";
+        qWarning() << "è­¦å‘Š: æœªæ‰¾åˆ°åä¸º comboBox_Waveform çš„æ³¢å½¢ä¸‹æ‹‰æ¡†æ§ä»¶ã€‚";
     }
 
 
-    // 4. (¿ÉÑ¡) ÔÚÓ¦ÓÃ³ÌĞòµÄÊä³ö´°¿Ú´òÓ¡ÈÕÖ¾£¬·½±ãÄúÈ·ÈÏ±¾´ÎËæ»úÑ¡ÔñµÄ½á¹û
+    // 4. (å¯é€‰) åœ¨åº”ç”¨ç¨‹åºçš„è¾“å‡ºçª—å£æ‰“å°æ—¥å¿—ï¼Œæ–¹ä¾¿æ‚¨ç¡®è®¤æœ¬æ¬¡éšæœºé€‰æ‹©çš„ç»“æœ
     // =================================================================
 //     if (ui->comboBox_Waveform) {
 //         QString chosenWaveformName = ui->comboBox_Waveform->itemText(chosenWaveformIndex);
-//         qDebug() << "Ëæ»ú´Ì¼¤²ÎÊıÒÑÔÚUIÉÏÉèÖÃ -> ²¨ĞÎ:" << chosenWaveformName
-//             << "(Ë÷Òı:" << chosenWaveformIndex << ")"
-//             << ", µçÑ¹:" << chosenVoltage << "V";
+//         qDebug() << "éšæœºåˆºæ¿€å‚æ•°å·²åœ¨UIä¸Šè®¾ç½® -> æ³¢å½¢:" << chosenWaveformName
+//             << "(ç´¢å¼•:" << chosenWaveformIndex << ")"
+//             << ", ç”µå‹:" << chosenVoltage << "V";
 //     }
 }
 
 
 //     void ExperDemoSystem::on_Random_Stimulus_clicked() {
-// 		// Ê×ÏÈ½«µç³¡´Ì¼¤ÉèÖÃÎª "Stop"
+// 		// é¦–å…ˆå°†ç”µåœºåˆºæ¿€è®¾ç½®ä¸º "Stop"
 // 		//on_Electric1_Stop_clicked();
 // 		//exp->sender->changeMessage(exp->Params->vChannel, exp->Params->vDir, exp->Params->vNum);
 // 
-// 		// ¼ì²éLEDÊÇ·ñ¹Ø±Õ
+// 		// æ£€æŸ¥LEDæ˜¯å¦å…³é—­
 // 		if (ui.LedOnOff->text() == "ON") {
-// 			// Ëæ»úÉèÖÃ¹âÇ¿£¨´Ó 25, 50, 75, 100 ÖĞÑ¡Ôñ£©
+// 			// éšæœºè®¾ç½®å…‰å¼ºï¼ˆä» 25, 50, 75, 100 ä¸­é€‰æ‹©ï¼‰
 // 			int randomBrightness = QRandomGenerator::global()->bounded(0, 4) * 25 + 25;
 // 			ui.LedSlider->setValue(randomBrightness); 
 // 			ui.LedSpinBox->setValue(randomBrightness);
 // 			exp->Params->BrightnessPerc = randomBrightness;
 // 
-// 			// ´ò¿ªLED
+// 			// æ‰“å¼€LED
 // 			ui.LedOnOff->setText("OFF");
 // 			ui.LedOnOff->setStyleSheet("background-color: #dc0e0e;");
 // 			exp->Params->Led0_status = 1;
 // 
-// 			// µ÷ÓÃ LED ¿ØÖÆº¯Êı
+// 			// è°ƒç”¨ LED æ§åˆ¶å‡½æ•°
 // 			if (exp->MyLed != NULL) {
 // 				TLDC_TurnLedOnOff(*(exp->MyLed), LED0, exp->Params->Led0_status, exp->Params->BrightnessPerc);
 // 			}
 // 
-// 			// Ëæ»úÉèÖÃ¹â´Ì¼¤Ê±¼ä£¨3Ãë¡¢5Ãë¡¢10Ãë£©
+// 			// éšæœºè®¾ç½®å…‰åˆºæ¿€æ—¶é—´ï¼ˆ3ç§’ã€5ç§’ã€10ç§’ï¼‰
 // 			int randomTime = (qrand() % 3) + 3;
 // 			QTimer::singleShot(randomTime * 1000, this, [this]() {
-// 				// ¹Ø±ÕLED
+// 				// å…³é—­LED
 // 				ui.LedOnOff->setText("ON");
 // 				ui.LedOnOff->setStyleSheet("background-color: rgb(85, 170, 0);");
 // 				exp->Params->Led0_status = 0;
 // 
-// 				// µ÷ÓÃ LED ¿ØÖÆº¯Êı
+// 				// è°ƒç”¨ LED æ§åˆ¶å‡½æ•°
 // 				if (exp->MyLed != NULL) {
 // 					TLDC_TurnLedOnOff(*(exp->MyLed), LED0, exp->Params->Led0_status, exp->Params->BrightnessPerc);
 // 				}
 // 
-// 				// Ë³Ê±Õë¸Ä±äµç³¡·½Ïò
-// 				// ¼ÇÂ¼µ±Ç°µÄµç³¡·½Ïò
+// 				// é¡ºæ—¶é’ˆæ”¹å˜ç”µåœºæ–¹å‘
+// 				// è®°å½•å½“å‰çš„ç”µåœºæ–¹å‘
 // 				int currentDirection = exp->Params->EF_Mode;
-//                 int nextDirection = (currentDirection % 4) + 1; // 1-4 ×ª»»Îª 2-5 È»ºóÈ¡Ä£
+//                 int nextDirection = (currentDirection % 4) + 1; // 1-4 è½¬æ¢ä¸º 2-5 ç„¶åå–æ¨¡
 // 
 // 				switch (nextDirection) {
 // 				case 1: // Right
@@ -1169,20 +1192,20 @@ void ExperDemoSystem::on_Random_Stimulus_clicked()
 // 					break;
 // 				}
 // 
-// 				// ¸üĞÂµç³¡²ÎÊı
+// 				// æ›´æ–°ç”µåœºå‚æ•°
 // 				//exp->sender->changeMessage(exp->Params->vChannel, exp->Params->vDir, exp->Params->vNum);
 // 				});
 // 		}
 // 	}
     
 
-    //ÓÃÓÚTcpÁ¬½ÓµÄ²Ûº¯Êı-¿Í»§¶Ë
+    //ç”¨äºTcpè¿æ¥çš„æ§½å‡½æ•°-å®¢æˆ·ç«¯
     void ExperDemoSystem::TcpSocketSlotConnection()
     {
         connect(m_server, &QTcpServer::newConnection, this, &ExperDemoSystem::handleNewConnection);
     }
 
-    //ÓÃÓÚ¶ÁÈ¡·şÎñÆ÷·¢ËÍ¹ıÀ´µÄÊı¾İ
+    //ç”¨äºè¯»å–æœåŠ¡å™¨å‘é€è¿‡æ¥çš„æ•°æ®
     void ExperDemoSystem::readFromServer(QString line) {
 	    if (socketStatus) {
 		    if (line == "0") {
@@ -1198,7 +1221,7 @@ void ExperDemoSystem::on_Random_Stimulus_clicked()
     }
 
     //void ExperDemoSystem::on_operation1_clicked() {
-    //    //Ô¤Éè²Ù×÷£ºÊ¹Ïß³æÍ£Ö¹
+    //    //é¢„è®¾æ“ä½œï¼šä½¿çº¿è™«åœæ­¢
 
 	   // ui.Ins1->setStyleSheet("background-color: rgb(85, 255, 127);");
 	   // ui.Ins2->setStyleSheet("background-color: rgb(255, 255, 255);");
@@ -1207,7 +1230,7 @@ void ExperDemoSystem::on_Random_Stimulus_clicked()
 	   // //emit ui.EF_Stop->clicked();
 	   // if (ui.LedOnOff->text() == "ON")
 		  //  emit ui.LedOnOff->clicked();
-    //#else    //´Ë´¦ĞèÒª¸Ä»ØÎŞ¿ØÖÆ µçÑ¹Îª0
+    //#else    //æ­¤å¤„éœ€è¦æ”¹å›æ— æ§åˆ¶ ç”µå‹ä¸º0
     //    //std::cout << "Square Wave -4 ~ 4v " << std::endl;
 	   // //exp->sender->SquareWave('3', 1, 50);
     //    //exp->sender->stopSquareWave();
@@ -1216,7 +1239,7 @@ void ExperDemoSystem::on_Random_Stimulus_clicked()
     //}
 
     void ExperDemoSystem::on_operation2_clicked() {
-        //Ô¤Éè²Ù×÷£ºÊ¹Ïß³æÏò·´·½ÏòĞĞ×ß
+        //é¢„è®¾æ“ä½œï¼šä½¿çº¿è™«å‘åæ–¹å‘è¡Œèµ°
 	    ui.Ins2->setStyleSheet("background-color: rgb(85, 255, 127);");
 	    ui.Ins1->setStyleSheet("background-color: rgb(255, 255, 255);");
 	    ui.Ins3->setStyleSheet("background-color: rgb(255, 255, 255);");
@@ -1227,7 +1250,7 @@ void ExperDemoSystem::on_Random_Stimulus_clicked()
     }
 
     void ExperDemoSystem::on_operation3_clicked() {
-        //Ô¤Éè²Ù×÷£ºÊ¹Ïß³æÏòÄ¿±êĞĞ×ß
+        //é¢„è®¾æ“ä½œï¼šä½¿çº¿è™«å‘ç›®æ ‡è¡Œèµ°
 	    ui.Ins3->setStyleSheet("background-color: rgb(85, 255, 127);");
 	    ui.Ins1->setStyleSheet("background-color: rgb(255, 255, 255);");
 	    ui.Ins2->setStyleSheet("background-color: rgb(255, 255, 255);");
@@ -1238,7 +1261,7 @@ void ExperDemoSystem::on_Random_Stimulus_clicked()
     }
 
 void ExperDemoSystem::on_RemoteConnect_clicked() {
-    if (!socketStatus) {   // ¿ªÊ¼Á¬½ÓÔ¶³Ì·şÎñÆ÷
+    if (!socketStatus) {   // å¼€å§‹è¿æ¥è¿œç¨‹æœåŠ¡å™¨
         ui.RemoteStatus->setText("Waiting for connection...");
 
         //QString IP = ui.IPtext->text();
@@ -1246,7 +1269,7 @@ void ExperDemoSystem::on_RemoteConnect_clicked() {
         m_server->listen(QHostAddress::Any, 6340);
         socketStatus = true;
     }
-    else {  // ¶Ï¿ªÁ¬½Ó
+    else {  // æ–­å¼€è¿æ¥
         //m_socket->disconnectFromHost();
         m_server->close();
         m_socket = nullptr;
@@ -1265,7 +1288,7 @@ void ExperDemoSystem::onSocketError(QAbstractSocket::SocketError socketError)
 	case QAbstractSocket::RemoteHostClosedError:
         ui.RemoteStatus->setText("The remote host closed the connection.");
 		break;
-		// ´¦ÀíÆäËû´íÎóÀàĞÍ
+		// å¤„ç†å…¶ä»–é”™è¯¯ç±»å‹
 	default:
         ui.RemoteStatus->setText(m_socket->errorString());
         qDebug() << m_socket->errorString();
@@ -1324,7 +1347,7 @@ void ExperDemoSystem::on_SendButton_2_clicked()
 		QString message = "0";
 		QByteArray data = message.toUtf8();
 		m_socket->write(data);
-		m_socket->flush(); // Ç¿ÖÆ½«Êı¾İĞ´Èëµ½ÍøÂçÖĞ
+		m_socket->flush(); // å¼ºåˆ¶å°†æ•°æ®å†™å…¥åˆ°ç½‘ç»œä¸­
 	}
 	else
 	{
@@ -1338,7 +1361,7 @@ void ExperDemoSystem::on_SendButton_3_clicked()
 		QString message = ui.messageSend->text();
 		QByteArray data = "1";
 		m_socket->write(data);
-		m_socket->flush(); // Ç¿ÖÆ½«Êı¾İĞ´Èëµ½ÍøÂçÖĞ
+		m_socket->flush(); // å¼ºåˆ¶å°†æ•°æ®å†™å…¥åˆ°ç½‘ç»œä¸­
 	}
 	else
 	{
@@ -1352,7 +1375,7 @@ void ExperDemoSystem::on_RemoteExpBegin_clicked()
 		QString message = ui.messageSend->text();
 		QByteArray data = "0";
 		m_socket->write(data);
-		m_socket->flush(); // Ç¿ÖÆ½«Êı¾İĞ´Èëµ½ÍøÂçÖĞ
+		m_socket->flush(); // å¼ºåˆ¶å°†æ•°æ®å†™å…¥åˆ°ç½‘ç»œä¸­
 	}
 	else
 	{
@@ -1366,7 +1389,7 @@ void ExperDemoSystem::on_Remote_Left_clicked()
 		QString message = ui.messageSend->text();
 		QByteArray data = "1";
 		m_socket->write(data);
-		m_socket->flush(); // Ç¿ÖÆ½«Êı¾İĞ´Èëµ½ÍøÂçÖĞ
+		m_socket->flush(); // å¼ºåˆ¶å°†æ•°æ®å†™å…¥åˆ°ç½‘ç»œä¸­
 	}
 	else
 	{
@@ -1380,7 +1403,7 @@ void ExperDemoSystem::on_Remote_Right_clicked()
 		QString message = ui.messageSend->text();
 		QByteArray data = "2";
 		m_socket->write(data);
-		m_socket->flush(); // Ç¿ÖÆ½«Êı¾İĞ´Èëµ½ÍøÂçÖĞ
+		m_socket->flush(); // å¼ºåˆ¶å°†æ•°æ®å†™å…¥åˆ°ç½‘ç»œä¸­
 	}
 	else
 	{
@@ -1388,25 +1411,25 @@ void ExperDemoSystem::on_Remote_Right_clicked()
 	}
 }
 
-/* ´¢´æÄ£¿é¿Ø¼ş */
+/* å‚¨å­˜æ¨¡å—æ§ä»¶ */
 void ExperDemoSystem::on_SaveData_clicked() {
     auto button = ui.SaveData;
 
-    //Ö»ÓĞµ±ÊµÑé¿ªÊ¼µÄÊ±ºò²ÅÄÜ½øĞĞÊı¾İ¼ÇÂ¼
+    //åªæœ‰å½“å®éªŒå¼€å§‹çš„æ—¶å€™æ‰èƒ½è¿›è¡Œæ•°æ®è®°å½•
     if (ui.ExpBegin->text() == "Begin Experiment") return;
 
     if (button->text() == "Save") {
         button->setText("Saving ...");
         button->setStyleSheet("background-color: #dc0e0e;");
 
-        //¸ü¸Ä´æ´¢Â·¾¶
+        //æ›´æ”¹å­˜å‚¨è·¯å¾„
         if (!ui.Path->text().isEmpty()) {
             QByteArray byteArray = ui.Path->text().toUtf8();
             const char* cstring = byteArray.data();
             strcpy(exp->dirname, cstring);
         }
 
-        //¸ü¸ÄÎÄ¼şÃû×Ö
+        //æ›´æ”¹æ–‡ä»¶åå­—
         if (!ui.dataPath->text().isEmpty()) {
             QString dataName = ui.dataPath->text() + QString::number(ui.expNum->value());
             QByteArray byteArray = dataName.toUtf8();
@@ -1414,7 +1437,7 @@ void ExperDemoSystem::on_SaveData_clicked() {
             strcpy(exp->outfname, cstring);
         }
 
-        emit ui.OriginPoint->clicked();  //ÖØÖÃ±ê×¼×ø±êÓÃÓÚ¼ÇÂ¼
+        emit ui.OriginPoint->clicked();  //é‡ç½®æ ‡å‡†åæ ‡ç”¨äºè®°å½•
         exp->e = SetupRecording(exp);
         exp->Params->Record = 1;
     }
@@ -1433,7 +1456,7 @@ void ExperDemoSystem::on_ChoseFolder_clicked() {
     }
 }
 
-//ÖØÔØ¼üÅÌ´¥·¢ÊÂ¼ş - ½«°´¼üÓëPushButtonÁ¬½Ó
+//é‡è½½é”®ç›˜è§¦å‘äº‹ä»¶ - å°†æŒ‰é”®ä¸PushButtonè¿æ¥
 void ExperDemoSystem::keyPressEvent(QKeyEvent* event) {
     switch (event->key()) {
     case Qt::Key_Up:
@@ -1453,34 +1476,34 @@ void ExperDemoSystem::keyPressEvent(QKeyEvent* event) {
         event->accept();
         break;
     default:
-        QWidget::keyPressEvent(event); // ´¦ÀíÆäËû°´¼üÊÂ¼ş
+        QWidget::keyPressEvent(event); // å¤„ç†å…¶ä»–æŒ‰é”®äº‹ä»¶
         break;
     }
 }
 
-//Á¬½ÓSpinBoxÍê³ÉĞÅºÅ
+//è¿æ¥SpinBoxå®Œæˆä¿¡å·
 void ExperDemoSystem::m_SpinBoxFinished() {
 
-    /* Í¼ÏñÏÔÊ¾²ÎÊı¿Ø¼ş */
+    /* å›¾åƒæ˜¾ç¤ºå‚æ•°æ§ä»¶ */
     connect(ui.Diameter, &QSpinBox::editingFinished, this, &ExperDemoSystem::m_Diameter_valueChanged);
     connect(ui.UpBoundary, &QSpinBox::editingFinished, this, &ExperDemoSystem::m_UpBoundary_valueChanged);
     connect(ui.RectHeight, &QSpinBox::editingFinished, this, &ExperDemoSystem::m_RectHeight_valueChanged);
     connect(ui.BinThreshBox, &QSpinBox::editingFinished, this, &ExperDemoSystem::m_BinThreshBox_valueChanged);
     connect(ui.ErodesThresh, &QSpinBox::editingFinished, this, &ExperDemoSystem::m_ErodesThresh_valueChanged);
 
-    /* Î»ÒÆÌ¨²ÎÊı¿Ø¼ş */
+    /* ä½ç§»å°å‚æ•°æ§ä»¶ */
     connect(ui.StageSpeed, &QSpinBox::editingFinished, this, &ExperDemoSystem::m_StageSpeed_valueChanged);
     connect(ui.radioAxisFree, &QRadioButton::toggled, this, &ExperDemoSystem::on_axisRadioButton_toggled);
     connect(ui.radioLockX, &QRadioButton::toggled, this, &ExperDemoSystem::on_axisRadioButton_toggled);
     connect(ui.radioLockY, &QRadioButton::toggled, this, &ExperDemoSystem::on_axisRadioButton_toggled);
 
-    /* ¹âµç¿ØÖÆÄ£¿é¿Ø¼ş */
+    /* å…‰ç”µæ§åˆ¶æ¨¡å—æ§ä»¶ */
     connect(ui.LedSpinBox, &QSpinBox::editingFinished, this, &ExperDemoSystem::m_LedSpinBox_valueChanged);
 }
 
-//ÓÃÓÚÁ¬Ğø´¥·¢°´¼ü£¬Á¬½Ó°´¼üĞÅºÅºÍ²Ûº¯Êı
+//ç”¨äºè¿ç»­è§¦å‘æŒ‰é”®ï¼Œè¿æ¥æŒ‰é”®ä¿¡å·å’Œæ§½å‡½æ•°
 void ExperDemoSystem::KeyTimerConnect() {
-    // ³õÊ¼»¯¶¨Ê±Æ÷
+    // åˆå§‹åŒ–å®šæ—¶å™¨
     m_upButtonTimer = new QTimer(this);
     m_downButtonTimer = new QTimer(this);
     m_leftButtonTimer = new QTimer(this);
@@ -1491,7 +1514,7 @@ void ExperDemoSystem::KeyTimerConnect() {
     connect(m_leftButtonTimer, &QTimer::timeout, this, &ExperDemoSystem::onLeftButtonTimeout);
     connect(m_rightButtonTimer, &QTimer::timeout, this, &ExperDemoSystem::onRightButtonTimeout);
 
-    // Á¬½Ó°´Å¥µÄ°´ÏÂºÍÊÍ·ÅĞÅºÅµ½ÏàÓ¦µÄ²Ûº¯Êı
+    // è¿æ¥æŒ‰é’®çš„æŒ‰ä¸‹å’Œé‡Šæ”¾ä¿¡å·åˆ°ç›¸åº”çš„æ§½å‡½æ•°
     connect(ui.Up, &QPushButton::pressed, this, &ExperDemoSystem::onUpButtonPressed);
     connect(ui.Up, &QPushButton::released, this, &ExperDemoSystem::onUpButtonReleased);
     connect(ui.Down, &QPushButton::pressed, this, &ExperDemoSystem::onDownButtonPressed);
@@ -1503,50 +1526,50 @@ void ExperDemoSystem::KeyTimerConnect() {
 }
 
 void ExperDemoSystem::onUpButtonPressed() {
-    m_upButtonTimer->start(100); // Æô¶¯¶¨Ê±Æ÷£¬¼ä¸ô100ºÁÃë
+    m_upButtonTimer->start(100); // å¯åŠ¨å®šæ—¶å™¨ï¼Œé—´éš”100æ¯«ç§’
 }
 
 void ExperDemoSystem::onUpButtonReleased() {
-    m_upButtonTimer->stop(); // Í£Ö¹¶¨Ê±Æ÷
+    m_upButtonTimer->stop(); // åœæ­¢å®šæ—¶å™¨
 }
 
 void ExperDemoSystem::onUpButtonTimeout() {
-    on_Up_clicked(); // ¶¨Ê±Æ÷³¬Ê±ºóµ÷ÓÃ°´Å¥µÄµã»÷²Ûº¯Êı
+    on_Up_clicked(); // å®šæ—¶å™¨è¶…æ—¶åè°ƒç”¨æŒ‰é’®çš„ç‚¹å‡»æ§½å‡½æ•°
 }
 
 void ExperDemoSystem::onDownButtonPressed() {
-    m_downButtonTimer->start(100); // Æô¶¯¶¨Ê±Æ÷£¬¼ä¸ô100ºÁÃë
+    m_downButtonTimer->start(100); // å¯åŠ¨å®šæ—¶å™¨ï¼Œé—´éš”100æ¯«ç§’
 }
 
 void ExperDemoSystem::onDownButtonReleased() {
-    m_downButtonTimer->stop(); // Í£Ö¹¶¨Ê±Æ÷
+    m_downButtonTimer->stop(); // åœæ­¢å®šæ—¶å™¨
 }
 
 void ExperDemoSystem::onDownButtonTimeout() {
-    on_Down_clicked(); // ¶¨Ê±Æ÷³¬Ê±ºóµ÷ÓÃ°´Å¥µÄµã»÷²Ûº¯Êı
+    on_Down_clicked(); // å®šæ—¶å™¨è¶…æ—¶åè°ƒç”¨æŒ‰é’®çš„ç‚¹å‡»æ§½å‡½æ•°
 }
 
 void ExperDemoSystem::onLeftButtonPressed() {
-    m_leftButtonTimer->start(100); // Æô¶¯¶¨Ê±Æ÷£¬¼ä¸ô100ºÁÃë
+    m_leftButtonTimer->start(100); // å¯åŠ¨å®šæ—¶å™¨ï¼Œé—´éš”100æ¯«ç§’
 }
 
 void ExperDemoSystem::onLeftButtonReleased() {
-    m_leftButtonTimer->stop(); // Í£Ö¹¶¨Ê±Æ÷
+    m_leftButtonTimer->stop(); // åœæ­¢å®šæ—¶å™¨
 }
 
 void ExperDemoSystem::onLeftButtonTimeout() {
-    on_Left_clicked(); // ¶¨Ê±Æ÷³¬Ê±ºóµ÷ÓÃ°´Å¥µÄµã»÷²Ûº¯Êı
+    on_Left_clicked(); // å®šæ—¶å™¨è¶…æ—¶åè°ƒç”¨æŒ‰é’®çš„ç‚¹å‡»æ§½å‡½æ•°
 }
 
 void ExperDemoSystem::onRightButtonPressed() {
-    m_rightButtonTimer->start(100); // Æô¶¯¶¨Ê±Æ÷£¬¼ä¸ô100ºÁÃë
+    m_rightButtonTimer->start(100); // å¯åŠ¨å®šæ—¶å™¨ï¼Œé—´éš”100æ¯«ç§’
 }
 
 void ExperDemoSystem::onRightButtonReleased() {
-    m_rightButtonTimer->stop(); // Í£Ö¹¶¨Ê±Æ÷
+    m_rightButtonTimer->stop(); // åœæ­¢å®šæ—¶å™¨
 }
 
 void ExperDemoSystem::onRightButtonTimeout() {
-    on_Right_clicked(); // ¶¨Ê±Æ÷³¬Ê±ºóµ÷ÓÃ°´Å¥µÄµã»÷²Ûº¯Êı
+    on_Right_clicked(); // å®šæ—¶å™¨è¶…æ—¶åè°ƒç”¨æŒ‰é’®çš„ç‚¹å‡»æ§½å‡½æ•°
 }
 

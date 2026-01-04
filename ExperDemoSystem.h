@@ -13,6 +13,7 @@
 #include <limits>
 #include <string>
 #include <unordered_map>
+#include <chrono>
 
 //OpenCV Headers
 #include <opencv2\highgui\highgui_c.h>
@@ -46,7 +47,7 @@
 #include <QRandomGenerator>
 #include <QDebug>
 
-//Ö÷Ïß³ÌÀà
+//ä¸»çº¿ç¨‹ç±»
 class ExperDemoSystem : public QWidget
 {
     Q_OBJECT
@@ -61,93 +62,93 @@ public:
     Experiment* exp;
     int e;
 
-    double totalDistance;   //Ïß³æÒÆ¶¯µÄ×Ü¾àÀë
-    double curVelocity;   //Ïß³æµ±Ç°µÄËÙ¶È
-    float moveStep;    //Î»ÒÆÌ¨ÒÆ¶¯Ò»²½µÄ¾àÀë µ¥Î»mm
+    double totalDistance;   //çº¿è™«ç§»åŠ¨çš„æ€»è·ç¦»
+    double curVelocity;   //çº¿è™«å½“å‰çš„é€Ÿåº¦
+    float moveStep;    //ä½ç§»å°ç§»åŠ¨ä¸€æ­¥çš„è·ç¦» å•ä½mm
     double nematodePosition_x;   
-    double nematodePosition_y;    //Ïß³æµÄÎ»ÖÃÏÔÊ¾
-    int Amp;    //µçÑ¹Êä³ö·ùÖµ
-    std::unordered_map<int, int> RealVoltage;  //ÕæÊµ¶ÔÕÕµÄµçÑ¹Öµ
-    int Fre;    //µçÑ¹Êä³öÆµÂÊ
-    int DutyCycle;   //·½²¨Õ¼¿Õ±È
+    double nematodePosition_y;    //çº¿è™«çš„ä½ç½®æ˜¾ç¤º
+    int Amp;    //ç”µå‹è¾“å‡ºå¹…å€¼
+    std::unordered_map<int, int> RealVoltage;  //çœŸå®å¯¹ç…§çš„ç”µå‹å€¼
+    int Fre;    //ç”µå‹è¾“å‡ºé¢‘ç‡
+    int DutyCycle;   //æ–¹æ³¢å ç©ºæ¯”
 
-    //¶¨Ê±Æ÷ÊÂ¼ş ÏÔÊ¾Í¼Ïñ
+    //å®šæ—¶å™¨äº‹ä»¶ æ˜¾ç¤ºå›¾åƒ
     void timerEvent(QTimerEvent* e);
 
-    void ImageLabel();   //ÓÃÓÚÓĞ¹ØÏß³æÍ¼ÏñµÄÏÔÊ¾²Ù×÷¶¼·ÅÔÚÕâÀï
+    void ImageLabel();   //ç”¨äºæœ‰å…³çº¿è™«å›¾åƒçš„æ˜¾ç¤ºæ“ä½œéƒ½æ”¾åœ¨è¿™é‡Œ
 
-    void KeyTimerConnect(); //ÓÃÓÚ°´¼üµÄÁ¬Ğø´¥·¢
+    void KeyTimerConnect(); //ç”¨äºæŒ‰é”®çš„è¿ç»­è§¦å‘
 
-    void m_SpinBoxFinished(); //Á¬½ÓSpinBoxÍê³ÉĞÅºÅ
+    void m_SpinBoxFinished(); //è¿æ¥SpinBoxå®Œæˆä¿¡å·
 
-    void SynchroControlPanel(); //Í¬²½¿ØÖÆ½çÃæ²ÎÊı
+    void SynchroControlPanel(); //åŒæ­¥æ§åˆ¶ç•Œé¢å‚æ•°
 
-    void TcpSocketSlotConnection(); //Tcp²Ûº¯Êı
+    void TcpSocketSlotConnection(); //Tcpæ§½å‡½æ•°
 
     QImage MatToImage(const cv::Mat& mat);
 
-	// µç³¡´Ì¼¤¼ÆÊ±Æ÷Ïà¹Ø
-	QTimer* m_efTimer;       // ÓÃÓÚ¶¨Ê±´¥·¢UI¸üĞÂ
-	QTime m_efElapsedTime;   // ÓÃÓÚ¼ÆËã¾­¹ıµÄÊ±¼ä
+	// ç”µåœºåˆºæ¿€è®¡æ—¶å™¨ç›¸å…³
+	QTimer* m_efTimer;       // ç”¨äºå®šæ—¶è§¦å‘UIæ›´æ–°
+	QTime m_efElapsedTime;   // ç”¨äºè®¡ç®—ç»è¿‡çš„æ—¶é—´
     
 private slots:
 
-    /* Í¼ÏñÏÔÊ¾²ÎÊı¿Ø¼ş */
-    void on_ExpBegin_clicked();  //¿ªÊ¼ÊµÑé°´Å¥
-    void on_ContrastImp_clicked(); //ÔöÇ¿¶Ô±È¶È°´Å¥
-    void m_Diameter_valueChanged(); //Ô²ĞÎMask°ë¾¶°´Å¥
-    void m_UpBoundary_valueChanged();  //¾ØĞÎÉÏ±ß½ç
+    /* å›¾åƒæ˜¾ç¤ºå‚æ•°æ§ä»¶ */
+    void on_ExpBegin_clicked();  //å¼€å§‹å®éªŒæŒ‰é’®
+    void on_ContrastImp_clicked(); //å¢å¼ºå¯¹æ¯”åº¦æŒ‰é’®
+    void m_Diameter_valueChanged(); //åœ†å½¢MaskåŠå¾„æŒ‰é’®
+    void m_UpBoundary_valueChanged();  //çŸ©å½¢ä¸Šè¾¹ç•Œ
     void on_UpBoundarySlider_valueChanged(int value);
-    void m_RectHeight_valueChanged();  //¾ØĞÎ¸ß¶È
+    void m_RectHeight_valueChanged();  //çŸ©å½¢é«˜åº¦
     void on_RectHeightSlider_valueChanged(int value);
-    void m_BinThreshBox_valueChanged();  //¶şÖµ»¯ãĞÖµ
-    //void m_DilateThresh_valueChanged();  //ÅòÕÍ²ÎÊı
+    void m_BinThreshBox_valueChanged();  //äºŒå€¼åŒ–é˜ˆå€¼
+    //void m_DilateThresh_valueChanged();  //è†¨èƒ€å‚æ•°
     //void on_DilateSlider_valueChanged(int value);
-    void m_ErodesThresh_valueChanged();   //¸¯Ê´²ÎÊı
+    void m_ErodesThresh_valueChanged();   //è…èš€å‚æ•°
     void on_ErodesSlider_valueChanged(int value);
-    void on_BinThreshSlider_valueChanged(int value);   //¶şÖµ»¯ãĞÖµ»¬Ìõ
-    void on_CircleRbt_clicked();  //MaskÑ¡Ôñ
+    void on_BinThreshSlider_valueChanged(int value);   //äºŒå€¼åŒ–é˜ˆå€¼æ»‘æ¡
+    void on_CircleRbt_clicked();  //Maské€‰æ‹©
     void on_RectRbt_clicked();
 
-    /* Î»ÒÆÌ¨²ÎÊı¿Ø¼ş */
+    /* ä½ç§»å°å‚æ•°æ§ä»¶ */
     void on_Up_clicked();
     void on_Down_clicked();
     void on_Right_clicked();
-    void on_Left_clicked();   //Î»ÒÆÌ¨·½Ïò¿ØÖÆ
-    void m_StageSpeed_valueChanged();  //Î»ÒÆÌ¨ËÙ¶È
-    void on_axisRadioButton_toggled(bool checked);//¸ú×ÙÖáËø¶¨
-    void on_Track_clicked();    //Î»ÒÆÌ¨¸ú×Ù¿ª¹Ø
-    void on_OriginPoint_clicked();   //Ô­µãÉè¶¨°´Å¥
-    void m_AccSet_valueChanged();  //¼ÓËÙ¶ÈÉè¶¨
+    void on_Left_clicked();   //ä½ç§»å°æ–¹å‘æ§åˆ¶
+    void m_StageSpeed_valueChanged();  //ä½ç§»å°é€Ÿåº¦
+    void on_axisRadioButton_toggled(bool checked);//è·Ÿè¸ªè½´é”å®š
+    void on_Track_clicked();    //ä½ç§»å°è·Ÿè¸ªå¼€å…³
+    void on_OriginPoint_clicked();   //åŸç‚¹è®¾å®šæŒ‰é’®
+    void m_AccSet_valueChanged();  //åŠ é€Ÿåº¦è®¾å®š
 
-    /* ¹âÒÅ´«´Ì¼¤Ä£¿é¿Ø¼ş */
-    void on_LedSlider_valueChanged(int value);  //LedÁÁ¶È»¬Ìõ
-    void m_LedSpinBox_valueChanged();  //LedÁÁ¶È
-    void on_LedOnOff_clicked();   //Led¿ª¹Ø
+    /* å…‰é—ä¼ åˆºæ¿€æ¨¡å—æ§ä»¶ */
+    void on_LedSlider_valueChanged(int value);  //Ledäº®åº¦æ»‘æ¡
+    void m_LedSpinBox_valueChanged();  //Ledäº®åº¦
+    void on_LedOnOff_clicked();   //Ledå¼€å…³
 
-    /* µç³¡´Ì¼¤Ä£¿é¿Ø¼Û */
+    /* ç”µåœºåˆºæ¿€æ¨¡å—æ§ä»· */
     void on_voltageSlider_valueChanged(int value);
-    void on_voltageBox_valueChanged();    //µçÑ¹·ùÖµ
+    void on_voltageBox_valueChanged();    //ç”µå‹å¹…å€¼
     void on_waveformBox_currentIndexChanged(int);
     void on_Electric1_Stop_clicked();
     void on_Electric1_Right_clicked();
     void on_Electric1_Down_clicked();
     void on_Electric1_Left_clicked();
     void on_Electric1_Up_clicked();
-    void updateTimerDisplay();  //¸üĞÂ¼ÆÊ±Æ÷ÏÔÊ¾µÄ²Ûº¯Êı
+    void updateTimerDisplay();  //æ›´æ–°è®¡æ—¶å™¨æ˜¾ç¤ºçš„æ§½å‡½æ•°
 
-    /* Ô¶³ÌÁ¬½ÓÄ£¿é */
+    /* è¿œç¨‹è¿æ¥æ¨¡å— */
     void on_Random_Stimulus_clicked();
     //void on_operation1_clicked();
     void on_operation2_clicked();
     void on_operation3_clicked();
     void on_RemoteConnect_clicked();
 
-    /* ´¢´æÄ£¿é¿Ø¼ş */
-    void on_SaveData_clicked();  //´¢´æÊı¾İ
-    void on_ChoseFolder_clicked();  //Ñ¡ÔñÎÄ¼ş¼Ğ
+    /* å‚¨å­˜æ¨¡å—æ§ä»¶ */
+    void on_SaveData_clicked();  //å‚¨å­˜æ•°æ®
+    void on_ChoseFolder_clicked();  //é€‰æ‹©æ–‡ä»¶å¤¹
 
-    /* ÓÃÓÚ°´¼üµÄÁ¬Ğø´¥·¢ */
+    /* ç”¨äºæŒ‰é”®çš„è¿ç»­è§¦å‘ */
     void onUpButtonPressed();
     void onUpButtonReleased();
     void onDownButtonPressed();
@@ -162,7 +163,7 @@ private slots:
     void onLeftButtonTimeout();
     void onRightButtonTimeout();
 
-    //Ô¶³ÌÁ¬½Ó²Ûº¯Êı
+    //è¿œç¨‹è¿æ¥æ§½å‡½æ•°
     void onConnected();
     void onDisconnected();
     void onError();
@@ -179,7 +180,7 @@ public slots:
     void recv_data();
 
 protected:
-    //ÖØÔØ¼üÅÌ´¥·¢ÊÂ¼ş - ½«°´¼üÓëPushButtonÁ¬½Ó
+    //é‡è½½é”®ç›˜è§¦å‘äº‹ä»¶ - å°†æŒ‰é”®ä¸PushButtonè¿æ¥
     void keyPressEvent(QKeyEvent* event) override;
 
 public:
@@ -187,28 +188,28 @@ public:
 
     //Worker* m_worker;
 
-    QThread* m_cameraThread;  //Ïà»úÏß³Ì
-    QThread* m_stageThread;   //Î»ÒÆÌ¨Ïß³Ì
-    QThread* m_recordThread;  //ÎÄ¼ş¼ÇÂ¼Ïß³Ì
+    QThread* m_cameraThread;  //ç›¸æœºçº¿ç¨‹
+    QThread* m_stageThread;   //ä½ç§»å°çº¿ç¨‹
+    QThread* m_recordThread;  //æ–‡ä»¶è®°å½•çº¿ç¨‹
 
-    bool m_cam_running;  //Ïà»úÔËĞĞ±ê¼Ç
-    bool m_stage_running;  //Î»ÒÆÌ¨ÔËĞĞ±ê¼Ç
-    bool m_histogram_running;  //Ö±·½Í¼Ïß³ÌÔËĞĞ±ê¼Ç
-    bool m_record_running;   //ÎÄ¼ş¼ÇÂ¼Ïß³Ì
+    bool m_cam_running;  //ç›¸æœºè¿è¡Œæ ‡è®°
+    bool m_stage_running;  //ä½ç§»å°è¿è¡Œæ ‡è®°
+    bool m_histogram_running;  //ç›´æ–¹å›¾çº¿ç¨‹è¿è¡Œæ ‡è®°
+    bool m_record_running;   //æ–‡ä»¶è®°å½•çº¿ç¨‹
 
-    bool Gui_Debug;   //µ÷ÊÔ
+    bool Gui_Debug;   //è°ƒè¯•
     bool ExpCanStart;
 
-    //ÓÃÓÚ°´¼üµÄÁ¬Ğø´¥·¢
+    //ç”¨äºæŒ‰é”®çš„è¿ç»­è§¦å‘
     QTimer* m_upButtonTimer;
     QTimer* m_downButtonTimer;
     QTimer* m_leftButtonTimer;
     QTimer* m_rightButtonTimer;
 
-    //ÓÃÓÚ¼ÇÂ¼Ïß³ÌµÄÑ­»·
+    //ç”¨äºè®°å½•çº¿ç¨‹çš„å¾ªç¯
     QTimer* m_recordTimer;
 
-    //´¢´æÊı¾İµÄÂ·¾¶
+    //å‚¨å­˜æ•°æ®çš„è·¯å¾„
     QString savePath;
 
     //tcp Socket
@@ -217,9 +218,9 @@ public:
     bool socketStatus;
     void readFromServer(QString line);
 
-    void captureImage();     //Ïß³Ì1
-    void moveStage();     //Ïß³Ì2
-    void recordData();    //Ïß³Ì3  ¼ÇÂ¼ÊµÑéÊı¾İ
+    void captureImage();     //çº¿ç¨‹1
+    void moveStage();     //çº¿ç¨‹2
+    void recordData();    //çº¿ç¨‹3  è®°å½•å®éªŒæ•°æ®
 
     /*char vChannel;
     char vDir;
